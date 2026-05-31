@@ -9,7 +9,7 @@
             "command": "make -j8",
             "presentation": {
                 "reveal": "always",
-                "panel": "new",
+                "panel": "dedicated",
                 "showReuseMessage":true,
             },
             "group": {
