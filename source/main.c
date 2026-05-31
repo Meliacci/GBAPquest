@@ -50,7 +50,7 @@ int main()
 	GRIT_CPY(pal_obj_mem, humanPal);
 	GRIT_CPY(tile_mem[4], humanTiles);
 
-	player_init(&g_link, int2fx(120), int2fx(80), 0);
+	player_init(&g_link, int2fx(96), int2fx(96), 0);
 	
 	// Load map into SBB 30
 	for (u16 i = 0; i < 16; i++)

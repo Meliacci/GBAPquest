@@ -2,7 +2,7 @@
 
 #include "player.h"
 
-#define LINK_SPEED	0x0f00
+#define LINK_SPEED	0x1000
 
 // --------------------------------------------------------------------
 // EXTERNAL
