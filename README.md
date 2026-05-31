@@ -1,10 +1,19 @@
+# GBApquest
 
-  hard_mode:
-    # In hard mode, the basic enemy and the final boss will have more health.
-    # The Health Upgrades become progression, as they are now required to beat the final boss.
-  hammer:
-    # Adds another item to the itempool: The Hammer.
-    # The top middle chest will now be locked behind a breakable wall, requiring the Hammer.
+Based on [APquest](https://github.com/ArchipelagoMW/Archipelago/tree/main/worlds/apquest), the work of NewSoupVi for [ARchipelago Multiworld Randomizer](https://github.com/ArchipelagoMW/Archipelago)
 
-  extra_starting_chest:
-    # Adds an extra chest in the bottom left, making room for an extra Confetti Cannon.
+Using the [Libtonc for the GBA](https://github.com/devkitPro/libtonc)
+
+This is a Simple GBA Compatible Game, meant for Randomization, Learning, and Didactic purposes.
+
+It is as of Writing, Not Even started, so i dunno how you found this public Repo yet.
+
+## Compatibility to APquest
+
+While this Plays like APquest, it is not compatible with the original, as the need to generate a patch file, handle patching, and connect via a different client, changes enough as to make it impossible to Connect to Orignal APquest Slots.
+
+As of writing this Project is not yet Playable
+
+## TODOs
+Base Functionality: player, collision, sword, enemy and boss
+Gameplay: hard_mode, hammer, extra_starting_chest
