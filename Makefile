@@ -31,7 +31,7 @@ SOURCES		:= source
 INCLUDES	:= include
 DATA		:=
 MUSIC		:=
-GRAPHICS	:= 
+GRAPHICS	:= graphics
 
 #---------------------------------------------------------------------------------
 # options for code generation
