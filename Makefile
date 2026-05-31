@@ -1,70 +1,187 @@
-#---------------------------------------------------------------------------------------------------------------------
-# TARGET is the name of the output.
-# BUILD is the directory where object files & intermediate files will be placed.
-# LIBBUTANO is the main directory of butano library (https://github.com/GValiente/butano).
-# PYTHON is the path to the python interpreter.
-# SOURCES is a list of directories containing source code.
-# INCLUDES is a list of directories containing extra header files.
-# DATA is a list of directories containing binary data files with *.bin extension.
-# GRAPHICS is a list of files and directories containing files to be processed by grit.
-# AUDIO is a list of files and directories containing files to be processed by the audio backend.
-# AUDIOBACKEND specifies the backend used for audio playback. Supported backends: maxmod, aas, null.
-# AUDIOTOOL is the path to the tool used process the audio files.
-# DMGAUDIO is a list of files and directories containing files to be processed by the DMG audio backend.
-# DMGAUDIOBACKEND specifies the backend used for DMG audio playback. Supported backends: default, null.
-# ROMTITLE is a uppercase ASCII, max 12 characters text string containing the output ROM title.
-# ROMCODE is a uppercase ASCII, max 4 characters text string containing the output ROM code.
-# USERFLAGS is a list of additional compiler flags:
-#     Pass -flto to enable link-time optimization.
-#     Pass -O0 or -Og to try to make debugging work.
-# USERCXXFLAGS is a list of additional compiler flags for C++ code only.
-# USERASFLAGS is a list of additional assembler flags.
-# USERLDFLAGS is a list of additional linker flags:
-#     Pass -flto=<number_of_cpu_cores> to enable parallel link-time optimization.
-# USERLIBDIRS is a list of additional directories containing libraries.
-#     Each libraries directory must contains include and lib subdirectories.
-# USERLIBS is a list of additional libraries to link with the project.
-# DEFAULTLIBS links standard system libraries when it is not empty.
-# STACKTRACE enables stack trace logging when it is not empty.
-# USERBUILD is a list of additional directories to remove when cleaning the project.
-# EXTTOOL is an optional command executed before processing audio, graphics and code files.
-#
-# All directories are specified relative to the project directory where the makefile is found.
-#---------------------------------------------------------------------------------------------------------------------
-TARGET      	:=  $(notdir $(CURDIR))
-BUILD       	:=  build
-LIBBUTANO   	:=  D:\Hayumi\Documents\butano\butano
-PYTHON      	:=  python
-SOURCES     	:=  src
-INCLUDES    	:=  include
-DATA        	:=
-GRAPHICS    	:=  graphics
-AUDIO       	:=  audio
-AUDIOBACKEND	:=  maxmod
-AUDIOTOOL		:=  
-DMGAUDIO    	:=  dmg_audio
-DMGAUDIOBACKEND	:=  default
-ROMTITLE    	:=  ROM TITLE
-ROMCODE     	:=  SBTP
-USERFLAGS   	:=  
-USERCXXFLAGS	:=  
-USERASFLAGS 	:=  
-USERLDFLAGS 	:=  
-USERLIBDIRS 	:=  
-USERLIBS    	:=  
-DEFAULTLIBS 	:=  
-STACKTRACE		:=	
-USERBUILD   	:=  
-EXTTOOL     	:=  
+#---------------------------------------------------------------------------------
+.SUFFIXES:
+#---------------------------------------------------------------------------------
 
-#---------------------------------------------------------------------------------------------------------------------
-# Export absolute butano path:
-#---------------------------------------------------------------------------------------------------------------------
-ifndef LIBBUTANOABS
-	export LIBBUTANOABS	:=	$(realpath $(LIBBUTANO))
+ifeq ($(strip $(DEVKITARM)),)
+$(error "Please set DEVKITARM in your environment. export DEVKITARM=<path to>devkitARM")
 endif
 
-#---------------------------------------------------------------------------------------------------------------------
-# Include main makefile:
-#---------------------------------------------------------------------------------------------------------------------
-include $(LIBBUTANOABS)/butano.mak
+include $(DEVKITARM)/gba_rules
+
+#---------------------------------------------------------------------------------
+# the LIBGBA path is defined in gba_rules, but we have to define LIBTONC ourselves
+#---------------------------------------------------------------------------------
+LIBTONC := $(DEVKITPRO)/libtonc
+
+#---------------------------------------------------------------------------------
+# TARGET is the name of the output
+# BUILD is the directory where object files & intermediate files will be placed
+# SOURCES is a list of directories containing source code
+# INCLUDES is a list of directories containing extra header files
+# DATA is a list of directories containing binary data
+# GRAPHICS is a list of directories containing files to be processed by grit
+#
+# All directories are specified relative to the project directory where
+# the makefile is found
+#
+#---------------------------------------------------------------------------------
+TARGET		:= $(notdir $(CURDIR))
+BUILD		:= build
+SOURCES		:= source
+INCLUDES	:= include
+DATA		:=
+MUSIC		:=
+GRAPHICS	:= graphics
+
+#---------------------------------------------------------------------------------
+# options for code generation
+#---------------------------------------------------------------------------------
+ARCH	:=	-mthumb -mthumb-interwork
+
+CFLAGS	:=	-g -Wall -O2\
+		-mcpu=arm7tdmi -mtune=arm7tdmi\
+		$(ARCH)
+
+CFLAGS	+=	$(INCLUDE)
+
+CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions
+
+ASFLAGS	:=	-g $(ARCH)
+LDFLAGS	=	-g $(ARCH) -Wl,-Map,$(notdir $*.map)
+
+#---------------------------------------------------------------------------------
+# any extra libraries we wish to link with the project
+#---------------------------------------------------------------------------------
+LIBS	:= -lmm -ltonc
+
+
+#---------------------------------------------------------------------------------
+# list of directories containing libraries, this must be the top level containing
+# include and lib.
+# the LIBGBA path should remain in this list if you want to use maxmod
+#---------------------------------------------------------------------------------
+LIBDIRS	:=	$(LIBGBA) $(LIBTONC)
+
+#---------------------------------------------------------------------------------
+# no real need to edit anything past this point unless you need to add additional
+# rules for different file extensions
+#---------------------------------------------------------------------------------
+
+
+ifneq ($(BUILD),$(notdir $(CURDIR)))
+#---------------------------------------------------------------------------------
+
+export OUTPUT	:=	$(CURDIR)/$(TARGET)
+
+export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
+			$(foreach dir,$(DATA),$(CURDIR)/$(dir)) \
+			$(foreach dir,$(GRAPHICS),$(CURDIR)/$(dir))
+
+export DEPSDIR	:=	$(CURDIR)/$(BUILD)
+
+CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
+PNGFILES	:=	$(foreach dir,$(GRAPHICS),$(notdir $(wildcard $(dir)/*.png)))
+BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+
+ifneq ($(strip $(MUSIC)),)
+	export AUDIOFILES	:=	$(foreach dir,$(notdir $(wildcard $(MUSIC)/*.*)),$(CURDIR)/$(MUSIC)/$(dir))
+	BINFILES += soundbank.bin
+endif
+
+#---------------------------------------------------------------------------------
+# use CXX for linking C++ projects, CC for standard C
+#---------------------------------------------------------------------------------
+ifeq ($(strip $(CPPFILES)),)
+#---------------------------------------------------------------------------------
+	export LD	:=	$(CC)
+#---------------------------------------------------------------------------------
+else
+#---------------------------------------------------------------------------------
+	export LD	:=	$(CXX)
+#---------------------------------------------------------------------------------
+endif
+#---------------------------------------------------------------------------------
+
+export OFILES_BIN := $(addsuffix .o,$(BINFILES))
+
+export OFILES_SOURCES := $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+
+export OFILES_GRAPHICS := $(PNGFILES:.png=.o)
+
+export OFILES := $(OFILES_BIN) $(OFILES_SOURCES) $(OFILES_GRAPHICS)
+
+export HFILES := $(addsuffix .h,$(subst .,_,$(BINFILES))) $(PNGFILES:.png=.h)
+
+export INCLUDE	:=	$(foreach dir,$(INCLUDES),-iquote $(CURDIR)/$(dir)) \
+					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+					-I$(CURDIR)/$(BUILD)
+
+export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
+
+.PHONY: $(BUILD) clean
+
+#---------------------------------------------------------------------------------
+$(BUILD):
+	@[ -d $@ ] || mkdir -p $@
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+
+#---------------------------------------------------------------------------------
+clean:
+	@echo clean ...
+	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).gba
+
+
+#---------------------------------------------------------------------------------
+else
+
+#---------------------------------------------------------------------------------
+# main targets
+#---------------------------------------------------------------------------------
+
+$(OUTPUT).gba	:	$(OUTPUT).elf
+
+$(OUTPUT).elf	:	$(OFILES)
+
+$(OFILES_SOURCES) : $(HFILES)
+
+#---------------------------------------------------------------------------------
+# The bin2o rule should be copied and modified
+# for each extension used in the data directories
+#---------------------------------------------------------------------------------
+
+#---------------------------------------------------------------------------------
+# rule to build soundbank from music files
+#---------------------------------------------------------------------------------
+soundbank.bin soundbank.h : $(AUDIOFILES)
+#---------------------------------------------------------------------------------
+	@mmutil $^ -osoundbank.bin -hsoundbank.h
+
+#---------------------------------------------------------------------------------
+# This rule links in binary data with the .bin extension
+#---------------------------------------------------------------------------------
+%.bin.o	%_bin.h :	%.bin
+#---------------------------------------------------------------------------------
+	@echo $(notdir $<)
+	@$(bin2o)
+
+#---------------------------------------------------------------------------------
+# This rule creates assembly source files using grit
+# grit takes an image file and a .grit describing how the file is to be processed
+# add additional rules like this for each image extension
+# you use in the graphics folders
+#---------------------------------------------------------------------------------
+%.s %.h: %.png %.grit
+#---------------------------------------------------------------------------------
+	@echo "grit $(notdir $<)"
+	@grit $< -fts -o$*
+
+# make likes to delete intermediate files. This prevents it from deleting the
+# files generated by grit after building the GBA ROM.
+.SECONDARY:
+
+-include $(DEPSDIR)/*.d
+#---------------------------------------------------------------------------------------
+endif
+#---------------------------------------------------------------------------------------
