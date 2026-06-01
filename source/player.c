@@ -1,5 +1,6 @@
 #include <tonc.h>
 
+#include "BG.h"
 #include "player.h"
 
 #define LINK_SPEED	0x1000
@@ -7,6 +8,26 @@
 // --------------------------------------------------------------------
 // EXTERNAL
 // --------------------------------------------------------------------
+typedef struct TMapInfo
+{
+	union
+	{
+		u32 state;			//!< Background state
+		struct
+		{
+			u16 flags;
+			u16 cnt;
+		};
+	};
+	// Destination data
+	SCR_ENTRY *dstMap;		//!< Screenblock pointer
+	// Source data
+	SCR_ENTRY *srcMap;		//!< Source map address
+	u32 srcMapWidth;		//!< Source map width
+	u32 srcMapHeight;		//!< Source map height
+	FIXED mapX;			//!< X-coord on map (.8f)
+	FIXED mapY;			//!< Y-coord on map (.8f)
+} TMapInfo;
 
 typedef struct VIEWPORT
 {
@@ -14,6 +35,7 @@ typedef struct VIEWPORT
 	int y, ymin, ymax, ypage;
 } VIEWPORT;
 
+extern TMapInfo g_bg;
 extern VIEWPORT g_vp;
 extern OBJ_ATTR obj_buffer[];
 
@@ -38,6 +60,21 @@ const OBJ_ATTR cLinkObjs=
 // --------------------------------------------------------------------
 // FUNCTIONS
 // --------------------------------------------------------------------
+bool MetaTileEquals(u16 MetaX, u16 MetaY, u16 TileID, SCR_ENTRY *se_en){
+	MetaX*=2;
+	MetaY*=2;
+	TileID*=4;
+	return 
+	(se_en[MetaY*32+MetaX]==(BGMetaTiles[TileID]&0x1F))&&
+	(se_en[MetaY*32+MetaX+1]==(BGMetaTiles[TileID+1]&0x1F))&&
+	(se_en[(MetaY+1)*32+MetaX]==(BGMetaTiles[TileID+2]&0x1F))&&
+	(se_en[(MetaY+1)*32+MetaX+1]==(BGMetaTiles[TileID+3]&0x1F));
+}
+
+bool can_move_target(TSprite *link){
+	POINT pt= { (fx2int(link->x+link->vx))/16, (fx2int(link->y+link->vy))/16};
+	return  !(pt.x<0 ||pt.x>15 || pt.y<0 || pt.y>15)&&( MetaTileEquals(pt.x,pt.y, 0x0001, g_bg.dstMap) || MetaTileEquals(pt.x, pt.y, 0x0003, g_bg.dstMap));
+}
 
 void player_init(TSprite *link, u32 x, u32 y, int obj_id)
 {
@@ -81,9 +118,10 @@ void player_input(TSprite *link)
 void player_move(TSprite *link)
 {
 	// TODO : collision testing here?
-
-	link->x += link->vx;
-	link->y += link->vy;
+	if(can_move_target(link)){
+		link->x += link->vx;
+		link->y += link->vy;
+	}
 }
 
 void player_turn(TSprite *link){
@@ -96,6 +134,8 @@ void player_turn(TSprite *link){
 	obj[0].attr1 &= ~(ATTR1_HFLIP | ATTR1_X_MASK);
 	obj[0].attr1 |= BFN_PREP(pt.x, ATTR1_X);
 	obj[0].attr2=dir*4;
+
+	
 }
 
 // EOF
