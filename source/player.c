@@ -73,7 +73,10 @@ bool MetaTileEquals(u16 MetaX, u16 MetaY, u16 TileID, SCR_ENTRY *se_en){
 
 bool can_move_target(TSprite *link){
 	POINT pt= { (fx2int(link->x+link->vx))/16, (fx2int(link->y+link->vy))/16};
-	return  !(pt.x<0 ||pt.x>15 || pt.y<0 || pt.y>15)&&( MetaTileEquals(pt.x,pt.y, 0x0001, g_bg.dstMap) || MetaTileEquals(pt.x, pt.y, 0x0003, g_bg.dstMap));
+	bool inBounds=!(pt.x<0 ||pt.x>15 || pt.y<0 || pt.y>15);
+	bool GroundIsSteppable=( MetaTileEquals(pt.x,pt.y, 0x0001, g_bg.dstMap) || MetaTileEquals(pt.x, pt.y, 0x0003, g_bg.dstMap));
+	bool WallNotThere=!(false);
+	return  inBounds&&GroundIsSteppable&&WallNotThere;
 }
 
 void player_init(TSprite *link, u32 x, u32 y, int obj_id)
