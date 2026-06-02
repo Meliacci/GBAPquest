@@ -8,6 +8,7 @@
 
 #include <tonc.h>
 #include "BG.h"
+#include "inanimates.h"
 #include "human.h"
 
 #include "player.h"
@@ -139,9 +140,9 @@ int main()
 	irq_add(II_VBLANK, NULL);
 	oam_init(obj_buffer, 128);
 	// Load palette
-	GRIT_CPY(pal_bg_mem, BGPal);
+	GRIT_CPY(pal_bg_mem, inanimatesPal);
 	// Load tiles into CBB 0
-	memcpy32(&tile_mem[0][0], BGTiles, BGTilesLen / sizeof(u32));
+	memcpy32(&tile_mem[0][0], inanimatesTiles, inanimatesTilesLen / sizeof(u32));
 	
 	bgt_meta_init(&g_bg, 1, BG_CBB(0)|BG_SBB(30) | BG_4BPP | BG_REG_32x32, BGMetaMap, 16,
 		16, 16);
@@ -208,8 +209,8 @@ void MetaTileLoad(u16 MetaX, u16 MetaY, u16 TileID, SCR_ENTRY *se_en){
 	MetaX*=2;
 	MetaY*=2;
 	TileID*=4;
-	se_en[MetaY*32+MetaX]=BGMetaTiles[TileID]&0x1F;
-	se_en[MetaY*32+MetaX+1]=BGMetaTiles[TileID+1]&0x1F;
-	se_en[(MetaY+1)*32+MetaX]=BGMetaTiles[TileID+2]&0x1F;
-	se_en[(MetaY+1)*32+MetaX+1]=BGMetaTiles[TileID+3]&0x1F;
+	se_en[MetaY*32+MetaX]=inanimatesMetaTiles[TileID]&0x1F;
+	se_en[MetaY*32+MetaX+1]=inanimatesMetaTiles[TileID+1]&0x1F;
+	se_en[(MetaY+1)*32+MetaX]=inanimatesMetaTiles[TileID+2]&0x1F;
+	se_en[(MetaY+1)*32+MetaX+1]=inanimatesMetaTiles[TileID+3]&0x1F;
 }
