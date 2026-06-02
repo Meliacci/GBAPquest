@@ -110,9 +110,6 @@ void bgt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 
 void bgt_update(TMapInfo *bgt, VIEWPORT *vp)
 {
-	// Pixel coords
-	int vx= vp->x, vy= vp->y;
-	int bx= bgt->mapX, by= bgt->mapY;
 
 	// Update TMapInfo and reg-offsets
 	int bgnr= bgt->flags;
