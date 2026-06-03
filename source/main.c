@@ -143,21 +143,6 @@ void bgt_update(TMapInfo *bgt, VIEWPORT *vp)
 	REG_BG_OFS[bgnr].y= bgt->mapY= vy;
 }
 
-void init_textbox(int bgnr, int left, int top, int right, int bottom)
-{
-	tte_set_margins(left, top, right, bottom);
-
-	REG_DISPCNT |= DCNT_WIN0;
-
-	REG_WIN0H= left<<8 | right;
-	REG_WIN0V= top<<8 | bottom;
-	REG_WIN0CNT= WIN_ALL | WIN_BLD;
-	REG_WINOUTCNT= WIN_ALL;
-
-	REG_BLDCNT= (BLD_ALL&~BIT(bgnr)) | BLD_BLACK;
-	REG_BLDY= 5;
-}
-
 int main()
 {
 	// Init interrupts and VBlank irq.
@@ -179,17 +164,9 @@ int main()
 	GRIT_CPY(tile_mem[4], humanTiles);
 
 	player_init(&g_link, int2fx(96), int2fx(176), 0);
-	//# NOTE: erasing and rendering text flows over into the VDRAW period.
-	//# Using the ASM renderer and placing the text at the bottom limits its effects.
-	tte_init_chr4c_b4_default(0, BG_CBB(2)|BG_SBB(28));
-	tte_set_drawg(chr4c_drawg_b4cts_fast);
-	tte_init_con();
 
-	//init_textbox(0, 8, 8, SCR_W-8, 8+2*12);
-
-	init_textbox(0, 8, SCR_H-(8+2*12), SCR_W-8, SCR_H-8);
-	REG_DISPCNT= DCNT_MODE0 | DCNT_BG0 | DCNT_BG1 | DCNT_BG2 | DCNT_OBJ |
-		DCNT_OBJ_1D | DCNT_WIN0;
+	REG_DISPCNT= DCNT_MODE0 | DCNT_BG1 | DCNT_BG2 | DCNT_OBJ |
+		DCNT_OBJ_1D;
 
 	// Scroll around some
 	int x= 0, y=0;
