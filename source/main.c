@@ -11,6 +11,7 @@
 #include "inanimates.h"
 #include "human.h"
 
+#include "metatile.h"
 #include "player.h"
 
 #define MAX_X_SCROLL 257 //set the  Size in Pixels of the Map
@@ -61,7 +62,6 @@ TSprite g_link;
 
 INLINE void vp_center(VIEWPORT *vp, int x, int y);
 void vp_set_pos(VIEWPORT *vp, int x, int y);
-void MetaTileLoad(u16 MetaX, u16 MetaY, u16 TileID, SCR_ENTRY *se_en);
 
 // === MACROS =========================================================
 // === INLINES=========================================================
@@ -202,11 +202,12 @@ int main()
 		key_poll();
 		
 		
-
+		// Player Logic & stuff
 		player_input(&g_link);
 		player_turn(&g_link);
 		player_move(&g_link);
-
+		
+		//Screen View Stuff
 		x= fx2int(g_link.x), y= fx2int(g_link.y);
 
 		vp_center(&g_vp, x, y);
@@ -214,54 +215,65 @@ int main()
 		
 		bgt_update(&g_bg, &g_vp);
 		bgt_update(&g_walls, &g_vp);
+
+		//Debug Stuff, Needs to be deleted After finishing
+
 		if(key_hit(KEY_START)){
 			WallMode=!WallMode;
-		}
-		if(key_hit(KEY_SELECT)){
-			HammerMode=!HammerMode;
-		}
-		if(key_hit(KEY_A)){
-			ChestClosed=!ChestClosed;
-		}
-		if(!HammerMode){
-			MetaTileLoad(6,5,0x01, g_bg.dstMap);
-			MetaTileLoad(8,5,0x01, g_bg.dstMap);
-			MetaTileLoad(7,5,0x00, g_walls.dstMap);
-		}else{
-			MetaTileLoad(6,5,0x02, g_bg.dstMap);
-			MetaTileLoad(8,5,0x02, g_bg.dstMap);
 			if(WallMode){
-				MetaTileLoad(7,5,0x04, g_walls.dstMap);
+				MetaTileLoad(3,3,0x08, g_walls.dstMap);
+				MetaTileLoad(3,7,0x07, g_walls.dstMap);
+				MetaTileLoad(8,11,0x06, g_walls.dstMap);
+				MetaTileLoad(11,5,0x0A, g_walls.dstMap);
+				if(HammerMode){
+					MetaTileLoad(7,5,0x04, g_walls.dstMap);
+				}else{
+					MetaTileLoad(7,5,0x00, g_walls.dstMap);
+				}
 			}else{
+				MetaTileLoad(3,3,0x09, g_walls.dstMap);
+				MetaTileLoad(3,7,0x00, g_walls.dstMap);
+				MetaTileLoad(8,11,0x00, g_walls.dstMap);
+				MetaTileLoad(11,5,0x00, g_walls.dstMap);
 				MetaTileLoad(7,5,0x00, g_walls.dstMap);
 			}
 		}
-		if(WallMode){
-			MetaTileLoad(3,3,0x08, g_walls.dstMap);
-			MetaTileLoad(3,7,0x07, g_walls.dstMap);
-			MetaTileLoad(8,11,0x06, g_walls.dstMap);
-			MetaTileLoad(11,5,0x0A, g_walls.dstMap);
-		}else{
-			MetaTileLoad(3,3,0x09, g_walls.dstMap);
-			MetaTileLoad(3,7,0x00, g_walls.dstMap);
-			MetaTileLoad(8,11,0x00, g_walls.dstMap);
-			MetaTileLoad(11,5,0x00, g_walls.dstMap);
+		if(key_hit(KEY_SELECT)){
+			HammerMode=!HammerMode;
+			if(!HammerMode){
+				MetaTileLoad(6,5,0x01, g_bg.dstMap);
+				MetaTileLoad(8,5,0x01, g_bg.dstMap);
+				MetaTileLoad(7,5,0x00, g_walls.dstMap);
+			}else{
+				MetaTileLoad(6,5,0x02, g_bg.dstMap);
+				MetaTileLoad(8,5,0x02, g_bg.dstMap);
+				if(WallMode){
+					MetaTileLoad(7,5,0x04, g_walls.dstMap);
+				}else{
+					MetaTileLoad(7,5,0x00, g_walls.dstMap);
+				}
+			}
 		}
-		if(ChestClosed){
-			MetaTileLoad(3,5,0x05, g_walls.dstMap);
-			MetaTileLoad(3,9,0x05, g_walls.dstMap);
-			MetaTileLoad(3,11,0x05, g_walls.dstMap);
-			MetaTileLoad(7,3,0x05, g_walls.dstMap);
-			MetaTileLoad(10,11,0x05, g_walls.dstMap);
-			MetaTileLoad(11,11,0x05, g_walls.dstMap);
-		}else{
-			MetaTileLoad(3,5,0x00, g_walls.dstMap);
-			MetaTileLoad(3,9,0x00, g_walls.dstMap);
-			MetaTileLoad(3,11,0x00, g_walls.dstMap);
-			MetaTileLoad(7,3,0x00, g_walls.dstMap);
-			MetaTileLoad(10,11,0x00, g_walls.dstMap);
-			MetaTileLoad(11,11,0x00, g_walls.dstMap);
+		if(key_hit(KEY_A)){
+			ChestClosed=!ChestClosed;
+			if(ChestClosed){
+				MetaTileLoad(3,5,0x05, g_walls.dstMap);
+				MetaTileLoad(3,9,0x05, g_walls.dstMap);
+				MetaTileLoad(3,11,0x05, g_walls.dstMap);
+				MetaTileLoad(7,3,0x05, g_walls.dstMap);
+				MetaTileLoad(10,11,0x05, g_walls.dstMap);
+				MetaTileLoad(11,11,0x05, g_walls.dstMap);
+			}else{
+				MetaTileLoad(3,5,0x00, g_walls.dstMap);
+				MetaTileLoad(3,9,0x00, g_walls.dstMap);
+				MetaTileLoad(3,11,0x00, g_walls.dstMap);
+				MetaTileLoad(7,3,0x00, g_walls.dstMap);
+				MetaTileLoad(10,11,0x00, g_walls.dstMap);
+				MetaTileLoad(11,11,0x00, g_walls.dstMap);
+			}
 		}
+		
+		
 
 
 		tte_printf("#{es;P}( x, y) = (%d,%d)\n(vx,vy) = (%d,%d)",
@@ -269,15 +281,4 @@ int main()
 	}
 
 	return 0;
-}
-
-
-void MetaTileLoad(u16 MetaX, u16 MetaY, u16 TileID, SCR_ENTRY *se_en){
-	MetaX*=2;
-	MetaY*=2;
-	TileID*=4;
-	se_en[MetaY*32+MetaX]=inanimatesMetaTiles[TileID];
-	se_en[MetaY*32+MetaX+1]=inanimatesMetaTiles[TileID+1];
-	se_en[(MetaY+1)*32+MetaX]=inanimatesMetaTiles[TileID+2];
-	se_en[(MetaY+1)*32+MetaX+1]=inanimatesMetaTiles[TileID+3];
 }

@@ -1,10 +1,3 @@
-//
-//  Sprite Link movement
-//
-//! \file link.h
-//! \author J Vijn
-//! \date 20070216 - 20070216
-//
 // === NOTES ===
 
 
@@ -20,7 +13,7 @@ enum ELookDir
 };
 
 #define SPR_STATE_STAND		0x0100
-#define SPR_STATE_WALK		0x0200
+#define SPR_STATE_SWING		0x0200
 
 // === CLASSES ========================================================
 
@@ -46,5 +39,6 @@ void player_input(TSprite *link);
 void player_move(TSprite *link);
 
 void player_turn(TSprite *link);
+POINT player_target_tile_coord(TSprite *link);
 
 // EOF
