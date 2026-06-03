@@ -51,6 +51,7 @@ VIEWPORT g_vp=
 };
 
 TMapInfo g_bg;
+TMapInfo g_walls;
 
 OBJ_ATTR obj_buffer[128];
 TSprite g_link;
@@ -81,6 +82,31 @@ void vp_set_pos(VIEWPORT *vp, int x, int y)
 
 // --- BACKGROUND???? ---
 
+void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
+	u16 tileSize ,u32 map_width, u32 map_height)
+{
+	memset(bgt, 0, sizeof(TMapInfo));
+
+	bgt->flags= bgnr;
+	bgt->cnt= ctrl;
+	bgt->dstMap= se_mem[BFN_GET(ctrl, BG_SBB)];
+
+	REG_BGCNT[bgnr]= ctrl;
+	REG_BG_OFS[bgnr].x= 0;
+	REG_BG_OFS[bgnr].y= 0;
+
+	bgt->srcMapWidth= map_width;
+	bgt->srcMapHeight= map_height;
+	SCR_ENTRY *dst= bgt->dstMap;
+	
+	for (u32 i = 0; i < map_height; i++){
+		for (u32 x = 0; x < map_width; x++)
+		{
+			MetaTileLoad(x,i,0,dst);
+		}
+	}
+}
+
 void bgt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	const void *metamap, u16 tileSize ,u32 map_width, u32 map_height)
 {
@@ -105,7 +131,6 @@ void bgt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 		{
 			MetaTileLoad(x,i,src[i*tileSize+x],dst);
 		}
-		
 	}
 }
 
@@ -144,7 +169,10 @@ int main()
 	// Load tiles into CBB 0
 	memcpy32(&tile_mem[0][0], inanimatesTiles, inanimatesTilesLen / sizeof(u32));
 	
-	bgt_meta_init(&g_bg, 1, BG_CBB(0)|BG_SBB(30) | BG_4BPP | BG_REG_32x32, BGMetaMap, 16,
+	bgt_meta_init(&g_bg, 2, BG_CBB(0)|BG_SBB(30) | BG_4BPP | BG_REG_32x32, BGMetaMap, 16,
+		16, 16);
+	
+	wallt_meta_init(&g_walls, 1, BG_CBB(0)|BG_SBB(26) | BG_4BPP | BG_REG_32x32, 16,
 		16, 16);
 	
 	GRIT_CPY(pal_obj_mem, humanPal);
@@ -160,22 +188,20 @@ int main()
 	//init_textbox(0, 8, 8, SCR_W-8, 8+2*12);
 
 	init_textbox(0, 8, SCR_H-(8+2*12), SCR_W-8, SCR_H-8);
-	REG_DISPCNT= DCNT_MODE0 | DCNT_BG0 | DCNT_BG1 | DCNT_OBJ |
+	REG_DISPCNT= DCNT_MODE0 | DCNT_BG0 | DCNT_BG1 | DCNT_BG2 | DCNT_OBJ |
 		DCNT_OBJ_1D | DCNT_WIN0;
 
 	// Scroll around some
 	int x= 0, y=0;
 	bool HammerMode=true;
-	bool ScrollMode=false;
+	bool WallMode=true;
+	bool ChestClosed=true;
 	while(1)
 	{
 		VBlankIntrWait();
 		key_poll();
 		
 		
-		if(key_hit(KEY_START)){
-			ScrollMode=!ScrollMode;	
-		}
 
 		player_input(&g_link);
 		player_turn(&g_link);
@@ -187,16 +213,57 @@ int main()
 		oam_copy(oam_mem, obj_buffer, 128);
 		
 		bgt_update(&g_bg, &g_vp);
+		bgt_update(&g_walls, &g_vp);
+		if(key_hit(KEY_START)){
+			WallMode=!WallMode;
+		}
 		if(key_hit(KEY_SELECT)){
-			if(HammerMode){
-				MetaTileLoad(6,5,0x01, g_bg.dstMap);
-				MetaTileLoad(8,5,0x01, g_bg.dstMap);
-			}else{
-				MetaTileLoad(6,5,0x02, g_bg.dstMap);
-				MetaTileLoad(8,5,0x02, g_bg.dstMap);
-			}
 			HammerMode=!HammerMode;
 		}
+		if(key_hit(KEY_A)){
+			ChestClosed=!ChestClosed;
+		}
+		if(!HammerMode){
+			MetaTileLoad(6,5,0x01, g_bg.dstMap);
+			MetaTileLoad(8,5,0x01, g_bg.dstMap);
+			MetaTileLoad(7,5,0x00, g_walls.dstMap);
+		}else{
+			MetaTileLoad(6,5,0x02, g_bg.dstMap);
+			MetaTileLoad(8,5,0x02, g_bg.dstMap);
+			if(WallMode){
+				MetaTileLoad(7,5,0x04, g_walls.dstMap);
+			}else{
+				MetaTileLoad(7,5,0x00, g_walls.dstMap);
+			}
+		}
+		if(WallMode){
+			MetaTileLoad(3,3,0x08, g_walls.dstMap);
+			MetaTileLoad(3,7,0x07, g_walls.dstMap);
+			MetaTileLoad(8,11,0x06, g_walls.dstMap);
+			MetaTileLoad(11,5,0x0A, g_walls.dstMap);
+		}else{
+			MetaTileLoad(3,3,0x09, g_walls.dstMap);
+			MetaTileLoad(3,7,0x00, g_walls.dstMap);
+			MetaTileLoad(8,11,0x00, g_walls.dstMap);
+			MetaTileLoad(11,5,0x00, g_walls.dstMap);
+		}
+		if(ChestClosed){
+			MetaTileLoad(3,5,0x05, g_walls.dstMap);
+			MetaTileLoad(3,9,0x05, g_walls.dstMap);
+			MetaTileLoad(3,11,0x05, g_walls.dstMap);
+			MetaTileLoad(7,3,0x05, g_walls.dstMap);
+			MetaTileLoad(10,11,0x05, g_walls.dstMap);
+			MetaTileLoad(11,11,0x05, g_walls.dstMap);
+		}else{
+			MetaTileLoad(3,5,0x00, g_walls.dstMap);
+			MetaTileLoad(3,9,0x00, g_walls.dstMap);
+			MetaTileLoad(3,11,0x00, g_walls.dstMap);
+			MetaTileLoad(7,3,0x00, g_walls.dstMap);
+			MetaTileLoad(10,11,0x00, g_walls.dstMap);
+			MetaTileLoad(11,11,0x00, g_walls.dstMap);
+		}
+
+
 		tte_printf("#{es;P}( x, y) = (%d,%d)\n(vx,vy) = (%d,%d)",
 			x, y, g_vp.x, g_vp.y);
 	}
@@ -209,8 +276,8 @@ void MetaTileLoad(u16 MetaX, u16 MetaY, u16 TileID, SCR_ENTRY *se_en){
 	MetaX*=2;
 	MetaY*=2;
 	TileID*=4;
-	se_en[MetaY*32+MetaX]=inanimatesMetaTiles[TileID]&0x1F;
-	se_en[MetaY*32+MetaX+1]=inanimatesMetaTiles[TileID+1]&0x1F;
-	se_en[(MetaY+1)*32+MetaX]=inanimatesMetaTiles[TileID+2]&0x1F;
-	se_en[(MetaY+1)*32+MetaX+1]=inanimatesMetaTiles[TileID+3]&0x1F;
+	se_en[MetaY*32+MetaX]=inanimatesMetaTiles[TileID];
+	se_en[MetaY*32+MetaX+1]=inanimatesMetaTiles[TileID+1];
+	se_en[(MetaY+1)*32+MetaX]=inanimatesMetaTiles[TileID+2];
+	se_en[(MetaY+1)*32+MetaX+1]=inanimatesMetaTiles[TileID+3];
 }
