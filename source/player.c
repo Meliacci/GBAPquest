@@ -3,6 +3,8 @@
 #include "BG.h"
 #include "player.h"
 
+#include "metatile.h"
+
 #define LINK_SPEED	0x1000
 
 // --------------------------------------------------------------------
@@ -61,16 +63,6 @@ const OBJ_ATTR cLinkObjs=
 // --------------------------------------------------------------------
 // FUNCTIONS
 // --------------------------------------------------------------------
-bool MetaTileEquals(u16 MetaX, u16 MetaY, u16 TileID, SCR_ENTRY *se_en){
-	MetaX*=2;
-	MetaY*=2;
-	TileID*=4;
-	return 
-	(se_en[MetaY*32+MetaX]==(BGMetaTiles[TileID]&0x1F))&&
-	(se_en[MetaY*32+MetaX+1]==(BGMetaTiles[TileID+1]&0x1F))&&
-	(se_en[(MetaY+1)*32+MetaX]==(BGMetaTiles[TileID+2]&0x1F))&&
-	(se_en[(MetaY+1)*32+MetaX+1]==(BGMetaTiles[TileID+3]&0x1F));
-}
 
 bool can_move_target(TSprite *link){
 	POINT pt= { (fx2int(link->x+link->vx))/16, (fx2int(link->y+link->vy))/16};
@@ -80,12 +72,36 @@ bool can_move_target(TSprite *link){
 	return  inBounds&&GroundIsSteppable&&WallNotThere;
 }
 
+POINT player_target_tile_coord(TSprite *link){
+	int vx=0, vy=0;
+	switch (link->dir)
+	{
+	case LOOK_RIGHT:
+		vx= LINK_SPEED;
+		break;
+	case LOOK_LEFT:
+		vx= -LINK_SPEED;
+		break;
+	case LOOK_DOWN:
+		vy= LINK_SPEED;
+		break;
+	case LOOK_UP:
+		vy= -LINK_SPEED;
+		break;
+	default:
+		break;
+	}
+	POINT pt= { (fx2int(link->x+vx))/16, (fx2int(link->y+vy))/16};
+
+	return pt;
+}
+
 void player_init(TSprite *link, u32 x, u32 y, int obj_id)
 {
 	link->x= x;
 	link->y= y;
 	link->vx= link->vy= 0;
-
+	link->state = SPR_STATE_STAND;
 	link->dir= LOOK_DOWN;
 	link->objId= obj_id;
 
@@ -117,11 +133,25 @@ void player_input(TSprite *link)
 		link->vy= -LINK_SPEED;
 		link->dir= LOOK_UP;
 	}
+	if(key_hit(KEY_B)){
+		link->state = SPR_STATE_SWING;
+	}else{
+		link->state = SPR_STATE_STAND;
+	}
 }
 
 void player_move(TSprite *link)
 {
-	// TODO : collision testing here?
+	POINT pt=player_target_tile_coord(link);
+	if(link->state==SPR_STATE_SWING){
+		if(MetaTileEquals(pt.x,pt.y,0x05,g_walls.dstMap)){
+			MetaTileLoad(pt.x,pt.y,0x00,g_walls.dstMap);
+		}
+		if(MetaTileEquals(pt.x,pt.y,0x08,g_walls.dstMap)){
+			MetaTileLoad(pt.x,pt.y,0x09,g_walls.dstMap);
+			MetaTileLoad(11,5,0x00, g_walls.dstMap);
+		}
+	}
 	if(can_move_target(link)){
 		link->x += link->vx;
 		link->y += link->vy;
