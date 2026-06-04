@@ -17,6 +17,7 @@
 
 #include "metatile.h"
 #include "player.h"
+#include "interactions.h"
 
 #define MAX_X_SCROLL 257 //set the  Size in Pixels of the Map
 #define MAX_Y_SCROLL 257
@@ -60,12 +61,48 @@ TMapInfo g_walls;
 
 OBJ_ATTR obj_buffer[128];
 TSprite g_link;
+bool HammerMode=true;
+bool WallMode=true;
+bool ChestClosed=true;
 
-typedef struct CHESTDATA{
-	u8 x,y;
-	u16 MetaTileinfo;
-} CHESTDATA;
+/*
+				Buttons
+				MetaTileLoad(3,3,0x08, g_walls.dstMap, inanimatesMetaTiles);
+				Walls
+				MetaTileLoad(3,9,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(3,11,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(7,3,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(10,11,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(11,11,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				Enemy
+				13,1,0x05, g_walls.dstMap, bossMetaTiles);
+				MetaTileLoad(11,7
+				Walls
+				MetaTileLoad(3,7,0x07, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(8,11,0x06, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(11,5,0x0A, g_walls.dstMap, inanimatesMetaTiles);
+*/
 
+TInteract Initializers[]={
+	//Buttons
+	{EIT_BUTTON, 3,3, 0x08, XY_MIXER(11,5), inanimatesMetaTiles},
+	//Chests
+	{EIT_CHEST, 3,5, 0x05, 0x00, inanimatesMetaTiles},
+	{EIT_CHEST, 3,9, 0x05, 0x00, inanimatesMetaTiles},
+	{EIT_CHEST, 3,11, 0x05, 0x00, inanimatesMetaTiles},
+	{EIT_CHEST, 7,3, 0x05, 0x00, inanimatesMetaTiles},
+	{EIT_CHEST, 10,11, 0x05, 0x00, inanimatesMetaTiles},
+	{EIT_CHEST, 11,11, 0x05, 0x00, inanimatesMetaTiles},
+	//Enemies
+	{EIT_ENEMY, 11,3, 0x03, 0x00, bossMetaTiles},
+	{EIT_ENEMY, 11,7, 0x01, 0x00, normal_enemyMetaTiles},
+	//Walss
+	{EIT_WALL, 3,7, 0x07, 0x00, inanimatesMetaTiles},
+	{EIT_WALL, 8,11, 0x06, 0x00, inanimatesMetaTiles},
+	{EIT_WALL, 11,5, 0x0A, 0x00, inanimatesMetaTiles},
+};
+
+u16 InitializersLen = 12;
 // === PROTOTYPES =====================================================
 
 INLINE void vp_center(VIEWPORT *vp, int x, int y);
@@ -112,6 +149,11 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 		{
 			MetaTileLoad(x,i,0,dst,inanimatesMetaTiles);
 		}
+	}
+	for (u16 i = 0; i < InitializersLen; i++)
+	{
+		TInteract tempInit=Initializers[i];
+		MetaTileLoad(tempInit.x,tempInit.y,tempInit.state,dst,tempInit.MetaTiles);
 	}
 }
 
@@ -187,11 +229,6 @@ int main()
 
 	// Scroll around some
 	int x= 0, y=0;
-	MetaTileLoad(13,1,0x05, g_walls.dstMap, bossMetaTiles);
-	MetaTileLoad(11,7,0x03, g_walls.dstMap, normal_enemyMetaTiles);
-	bool HammerMode=true;
-	bool WallMode=true;
-	bool ChestClosed=true;
 	while(1)
 	{
 		VBlankIntrWait();
