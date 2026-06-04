@@ -11,6 +11,8 @@
 #include "inanimates.h"
 #include "items.h"
 #include "human.h"
+#include "boss.h"
+#include "normal_enemy.h"
 #include "hearts.h"
 
 #include "metatile.h"
@@ -159,11 +161,15 @@ int main()
 	memcpy16(&pal_bg_mem[0], inanimatesPal, inanimatesPalLen/sizeof(u16));
 	memcpy16(&pal_bg_mem[16], itemsPal, inanimatesPalLen/sizeof(u16));
 	memcpy16(&pal_bg_mem[32], heartsPal, heartsPalLen/sizeof(u16));
+	memcpy16(&pal_bg_mem[48], bossPal, bossPalLen/sizeof(u16));
+	memcpy16(&pal_bg_mem[64], normal_enemyPal, normal_enemyPalLen/sizeof(u16));
 	// Load tiles into CBB 0
 	memcpy32(&tile_mem[0][0], inanimatesTiles, inanimatesTilesLen / sizeof(u32));
 	
 	memcpy32(&tile_mem[0][32], itemsTiles, itemsTilesLen / sizeof(u32));
 	memcpy32(&tile_mem[0][53], heartsTiles, heartsTilesLen / sizeof(u32));
+	memcpy32(&tile_mem[0][64], bossTiles, bossTilesLen / sizeof(u32));
+	memcpy32(&tile_mem[0][84], normal_enemyTiles, normal_enemyTilesLen / sizeof(u32));
 	
 	bgt_meta_init(&g_bg, 2, BG_CBB(0)|BG_SBB(30) | BG_4BPP | BG_REG_32x32, BGMetaMap, 16,
 		16, 16);
@@ -181,6 +187,8 @@ int main()
 
 	// Scroll around some
 	int x= 0, y=0;
+	MetaTileLoad(13,1,0x05, g_walls.dstMap, bossMetaTiles);
+	MetaTileLoad(11,7,0x03, g_walls.dstMap, normal_enemyMetaTiles);
 	bool HammerMode=true;
 	bool WallMode=true;
 	bool ChestClosed=true;

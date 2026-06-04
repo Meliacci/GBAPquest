@@ -1,6 +1,6 @@
 #
 # Human : 4bpp, not compressed. 
-# Graphics: Transparent Color is #00FF00 
+# Graphics: Transparent Color is #9c9e9e
 # Meta Tiles 2 by 2
 #
--gB4 -gT FF0000 -m! -Mh 2 -Mw 2 -pn 8
+-gB4 -gT 9c9e9e -Mh 2 -Mw 2 -mR4 -mp 3 -ma 64 -pn 8
