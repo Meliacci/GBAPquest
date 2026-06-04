@@ -2,7 +2,7 @@
 
 #include "BG.h"
 #include "player.h"
-
+#include "inanimates.h"
 #include "metatile.h"
 
 #define LINK_SPEED	0x1000
@@ -67,8 +67,8 @@ const OBJ_ATTR cLinkObjs=
 bool can_move_target(TSprite *link){
 	POINT pt= { (fx2int(link->x+link->vx))/16, (fx2int(link->y+link->vy))/16};
 	bool inBounds=!(pt.x<0 ||pt.x>15 || pt.y<0 || pt.y>15);
-	bool GroundIsSteppable=( MetaTileEquals(pt.x,pt.y, 0x0001, g_bg.dstMap) || MetaTileEquals(pt.x, pt.y, 0x0003, g_bg.dstMap));
-	bool WallNotThere=MetaTileEquals(pt.x,pt.y, 0x0000, g_walls.dstMap);
+	bool GroundIsSteppable=( MetaTileEquals(pt.x,pt.y, 0x0001, g_bg.dstMap, inanimatesMetaTiles) || MetaTileEquals(pt.x, pt.y, 0x0003, g_bg.dstMap, inanimatesMetaTiles));
+	bool WallNotThere=MetaTileEquals(pt.x,pt.y, 0x0000, g_walls.dstMap, inanimatesMetaTiles);
 	return  inBounds&&GroundIsSteppable&&WallNotThere;
 }
 
@@ -144,12 +144,12 @@ void player_move(TSprite *link)
 {
 	POINT pt=player_target_tile_coord(link);
 	if(link->state==SPR_STATE_SWING){
-		if(MetaTileEquals(pt.x,pt.y,0x05,g_walls.dstMap)){
-			MetaTileLoad(pt.x,pt.y,0x00,g_walls.dstMap);
+		if(MetaTileEquals(pt.x,pt.y,0x05,g_walls.dstMap, inanimatesMetaTiles)){
+			MetaTileLoad(pt.x,pt.y,0x00,g_walls.dstMap, inanimatesMetaTiles);
 		}
-		if(MetaTileEquals(pt.x,pt.y,0x08,g_walls.dstMap)){
-			MetaTileLoad(pt.x,pt.y,0x09,g_walls.dstMap);
-			MetaTileLoad(11,5,0x00, g_walls.dstMap);
+		if(MetaTileEquals(pt.x,pt.y,0x08,g_walls.dstMap, inanimatesMetaTiles)){
+			MetaTileLoad(pt.x,pt.y,0x09,g_walls.dstMap, inanimatesMetaTiles);
+			MetaTileLoad(11,5,0x00, g_walls.dstMap, inanimatesMetaTiles);
 		}
 	}
 	if(can_move_target(link)){

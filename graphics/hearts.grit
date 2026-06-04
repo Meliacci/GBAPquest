@@ -3,4 +3,4 @@
 # Graphics: Transparent Color is #00FF00 
 # Meta Tiles 2 by 2
 #
--gB4 -gT 00FF00 -m! -Mh 2 -Mw 2 -pn 8
+-gt -gB4 -gT 00FF00 -Mh 2 -Mw 2 -mp 2 -ma 53 -pn 16

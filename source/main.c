@@ -9,7 +9,11 @@
 #include <tonc.h>
 #include "BG.h"
 #include "inanimates.h"
+#include "items.h"
 #include "human.h"
+#include "boss.h"
+#include "normal_enemy.h"
+#include "hearts.h"
 
 #include "metatile.h"
 #include "player.h"
@@ -57,6 +61,10 @@ TMapInfo g_walls;
 OBJ_ATTR obj_buffer[128];
 TSprite g_link;
 
+typedef struct CHESTDATA{
+	u8 x,y;
+	u16 MetaTileinfo;
+} CHESTDATA;
 
 // === PROTOTYPES =====================================================
 
@@ -102,7 +110,7 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	for (u32 i = 0; i < map_height; i++){
 		for (u32 x = 0; x < map_width; x++)
 		{
-			MetaTileLoad(x,i,0,dst);
+			MetaTileLoad(x,i,0,dst,inanimatesMetaTiles);
 		}
 	}
 }
@@ -129,7 +137,7 @@ void bgt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	for (u32 i = 0; i < map_height; i++){
 		for (u32 x = 0; x < map_width; x++)
 		{
-			MetaTileLoad(x,i,src[i*tileSize+x],dst);
+			MetaTileLoad(x,i,src[i*tileSize+x],dst, inanimatesMetaTiles);
 		}
 	}
 }
@@ -150,9 +158,18 @@ int main()
 	irq_add(II_VBLANK, NULL);
 	oam_init(obj_buffer, 128);
 	// Load palette
-	GRIT_CPY(pal_bg_mem, inanimatesPal);
+	memcpy16(&pal_bg_mem[0], inanimatesPal, inanimatesPalLen/sizeof(u16));
+	memcpy16(&pal_bg_mem[16], itemsPal, inanimatesPalLen/sizeof(u16));
+	memcpy16(&pal_bg_mem[32], heartsPal, heartsPalLen/sizeof(u16));
+	memcpy16(&pal_bg_mem[48], bossPal, bossPalLen/sizeof(u16));
+	memcpy16(&pal_bg_mem[64], normal_enemyPal, normal_enemyPalLen/sizeof(u16));
 	// Load tiles into CBB 0
 	memcpy32(&tile_mem[0][0], inanimatesTiles, inanimatesTilesLen / sizeof(u32));
+	
+	memcpy32(&tile_mem[0][32], itemsTiles, itemsTilesLen / sizeof(u32));
+	memcpy32(&tile_mem[0][53], heartsTiles, heartsTilesLen / sizeof(u32));
+	memcpy32(&tile_mem[0][64], bossTiles, bossTilesLen / sizeof(u32));
+	memcpy32(&tile_mem[0][84], normal_enemyTiles, normal_enemyTilesLen / sizeof(u32));
 	
 	bgt_meta_init(&g_bg, 2, BG_CBB(0)|BG_SBB(30) | BG_4BPP | BG_REG_32x32, BGMetaMap, 16,
 		16, 16);
@@ -170,6 +187,8 @@ int main()
 
 	// Scroll around some
 	int x= 0, y=0;
+	MetaTileLoad(13,1,0x05, g_walls.dstMap, bossMetaTiles);
+	MetaTileLoad(11,7,0x03, g_walls.dstMap, normal_enemyMetaTiles);
 	bool HammerMode=true;
 	bool WallMode=true;
 	bool ChestClosed=true;
@@ -198,55 +217,55 @@ int main()
 		if(key_hit(KEY_START)){
 			WallMode=!WallMode;
 			if(WallMode){
-				MetaTileLoad(3,3,0x08, g_walls.dstMap);
-				MetaTileLoad(3,7,0x07, g_walls.dstMap);
-				MetaTileLoad(8,11,0x06, g_walls.dstMap);
-				MetaTileLoad(11,5,0x0A, g_walls.dstMap);
+				MetaTileLoad(3,3,0x08, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(3,7,0x07, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(8,11,0x06, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(11,5,0x0A, g_walls.dstMap, inanimatesMetaTiles);
 				if(HammerMode){
-					MetaTileLoad(7,5,0x04, g_walls.dstMap);
+					MetaTileLoad(7,5,0x04, g_walls.dstMap, inanimatesMetaTiles);
 				}else{
-					MetaTileLoad(7,5,0x00, g_walls.dstMap);
+					MetaTileLoad(7,5,0x00, g_walls.dstMap, inanimatesMetaTiles);
 				}
 			}else{
-				MetaTileLoad(3,3,0x09, g_walls.dstMap);
-				MetaTileLoad(3,7,0x00, g_walls.dstMap);
-				MetaTileLoad(8,11,0x00, g_walls.dstMap);
-				MetaTileLoad(11,5,0x00, g_walls.dstMap);
-				MetaTileLoad(7,5,0x00, g_walls.dstMap);
+				MetaTileLoad(3,3,0x09, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(3,7,0x00, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(8,11,0x00, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(11,5,0x00, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(7,5,0x00, g_walls.dstMap, inanimatesMetaTiles);
 			}
 		}
 		if(key_hit(KEY_SELECT)){
 			HammerMode=!HammerMode;
 			if(!HammerMode){
-				MetaTileLoad(6,5,0x01, g_bg.dstMap);
-				MetaTileLoad(8,5,0x01, g_bg.dstMap);
-				MetaTileLoad(7,5,0x00, g_walls.dstMap);
+				MetaTileLoad(6,5,0x01, g_bg.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(8,5,0x01, g_bg.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(7,5,0x00, g_walls.dstMap, inanimatesMetaTiles);
 			}else{
-				MetaTileLoad(6,5,0x02, g_bg.dstMap);
-				MetaTileLoad(8,5,0x02, g_bg.dstMap);
+				MetaTileLoad(6,5,0x02, g_bg.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(8,5,0x02, g_bg.dstMap, inanimatesMetaTiles);
 				if(WallMode){
-					MetaTileLoad(7,5,0x04, g_walls.dstMap);
+					MetaTileLoad(7,5,0x04, g_walls.dstMap, inanimatesMetaTiles);
 				}else{
-					MetaTileLoad(7,5,0x00, g_walls.dstMap);
+					MetaTileLoad(7,5,0x00, g_walls.dstMap, inanimatesMetaTiles);
 				}
 			}
 		}
 		if(key_hit(KEY_A)){
 			ChestClosed=!ChestClosed;
 			if(ChestClosed){
-				MetaTileLoad(3,5,0x05, g_walls.dstMap);
-				MetaTileLoad(3,9,0x05, g_walls.dstMap);
-				MetaTileLoad(3,11,0x05, g_walls.dstMap);
-				MetaTileLoad(7,3,0x05, g_walls.dstMap);
-				MetaTileLoad(10,11,0x05, g_walls.dstMap);
-				MetaTileLoad(11,11,0x05, g_walls.dstMap);
+				MetaTileLoad(3,5,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(3,9,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(3,11,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(7,3,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(10,11,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(11,11,0x05, g_walls.dstMap, inanimatesMetaTiles);
 			}else{
-				MetaTileLoad(3,5,0x00, g_walls.dstMap);
-				MetaTileLoad(3,9,0x00, g_walls.dstMap);
-				MetaTileLoad(3,11,0x00, g_walls.dstMap);
-				MetaTileLoad(7,3,0x00, g_walls.dstMap);
-				MetaTileLoad(10,11,0x00, g_walls.dstMap);
-				MetaTileLoad(11,11,0x00, g_walls.dstMap);
+				MetaTileLoad(3,5,0x02, g_walls.dstMap, heartsMetaTiles);
+				MetaTileLoad(3,9,0x02, g_walls.dstMap, itemsMetaTiles);
+				MetaTileLoad(3,11,0x03, g_walls.dstMap, itemsMetaTiles);
+				MetaTileLoad(7,3,0x04, g_walls.dstMap, itemsMetaTiles);
+				MetaTileLoad(10,11,0x05, g_walls.dstMap, itemsMetaTiles);
+				MetaTileLoad(11,11,0x06, g_walls.dstMap, itemsMetaTiles);
 			}
 		}
 		
