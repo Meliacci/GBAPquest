@@ -5,8 +5,8 @@
 
 // === MACRO ======================================================
 
-#define XY_MIXER(x,y) ((((x<<2)&0xFF00))|((y)&0x00FF))
-#define X_EXTRACT(xy) (((xy>>2)&0x00FF))
+#define XY_MIXER(x,y) ((((x<<8)&0xFF00))|((y)&0x00FF))
+#define X_EXTRACT(xy) (((xy>>8)&0x00FF))
 #define Y_EXTRACT(xy) ((xy&0x00FF))
 
 // === CONSTANTS ======================================================
@@ -63,6 +63,7 @@ typedef struct TInteract
     * Pointer to Meta Tile Mappings (where Given index tile*4+[0-3] returns the S-tile to be used at each of the 4 Tiles that make up a Meta Tile)
     */
 	const u16            *MetaTiles;		//!< Tile Reference
+    SCR_ENTRY *dst; //!< Screen Entry
 } TInteract;
 
 #endif // __TILEINFO__

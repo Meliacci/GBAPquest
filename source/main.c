@@ -103,6 +103,8 @@ TInteract Initializers[]={
 };
 
 u16 InitializersLen = 12;
+
+TInteract* g_CoordLUT[16][16];
 // === PROTOTYPES =====================================================
 
 INLINE void vp_center(VIEWPORT *vp, int x, int y);
@@ -152,8 +154,10 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	}
 	for (u16 i = 0; i < InitializersLen; i++)
 	{
-		TInteract tempInit=Initializers[i];
-		MetaTileLoad(tempInit.x,tempInit.y,tempInit.state,dst,tempInit.MetaTiles);
+		TInteract* tempInit=&Initializers[i];
+		MetaTileLoad(tempInit->x,tempInit->y,tempInit->state,dst,tempInit->MetaTiles);
+		tempInit->dst=dst;
+		g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
 	}
 }
 

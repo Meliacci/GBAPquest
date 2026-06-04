@@ -4,6 +4,7 @@
 #include "player.h"
 #include "inanimates.h"
 #include "metatile.h"
+#include "interactions.h"
 
 #define LINK_SPEED	0x1000
 
@@ -41,7 +42,7 @@ extern TMapInfo g_bg;
 extern TMapInfo g_walls;
 extern VIEWPORT g_vp;
 extern OBJ_ATTR obj_buffer[];
-
+extern TInteract* g_CoordLUT[16][16];
 // --------------------------------------------------------------------
 // DECLARATIONS
 // --------------------------------------------------------------------
@@ -144,13 +145,7 @@ void player_move(TSprite *link)
 {
 	POINT pt=player_target_tile_coord(link);
 	if(link->state==SPR_STATE_SWING){
-		if(MetaTileEquals(pt.x,pt.y,0x05,g_walls.dstMap, inanimatesMetaTiles)){
-			MetaTileLoad(pt.x,pt.y,0x00,g_walls.dstMap, inanimatesMetaTiles);
-		}
-		if(MetaTileEquals(pt.x,pt.y,0x08,g_walls.dstMap, inanimatesMetaTiles)){
-			MetaTileLoad(pt.x,pt.y,0x09,g_walls.dstMap, inanimatesMetaTiles);
-			MetaTileLoad(11,5,0x00, g_walls.dstMap, inanimatesMetaTiles);
-		}
+		InteractWith(g_CoordLUT[pt.x][pt.y]);
 	}
 	if(can_move_target(link)){
 		link->x += link->vx;
