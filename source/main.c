@@ -17,6 +17,7 @@
 
 #include "metatile.h"
 #include "player.h"
+#include "interactions.h"
 
 #define MAX_X_SCROLL 257 //set the  Size in Pixels of the Map
 #define MAX_Y_SCROLL 257
@@ -60,12 +61,55 @@ TMapInfo g_walls;
 
 OBJ_ATTR obj_buffer[128];
 TSprite g_link;
+bool HammerMode=true;
+bool WallMode=true;
+bool ChestClosed=true;
 
-typedef struct CHESTDATA{
-	u8 x,y;
-	u16 MetaTileinfo;
-} CHESTDATA;
+/*
+				Buttons
+				MetaTileLoad(3,3,0x08, g_walls.dstMap, inanimatesMetaTiles);
+				Walls
+				MetaTileLoad(3,9,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(3,11,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(7,3,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(10,11,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(11,11,0x05, g_walls.dstMap, inanimatesMetaTiles);
+				Enemy
+				13,1,0x05, g_walls.dstMap, bossMetaTiles);
+				MetaTileLoad(11,7
+				Walls
+				MetaTileLoad(3,7,0x07, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(8,11,0x06, g_walls.dstMap, inanimatesMetaTiles);
+				MetaTileLoad(11,5,0x0A, g_walls.dstMap, inanimatesMetaTiles);
+*/
 
+TInteract Initializers[]={
+	//Buttons
+	{EIT_BUTTON, 3,3, 0x08, XY_MIXER(11,5), inanimatesMetaTiles},
+	//Chests
+	{EIT_CHEST, 3,5, 0x05, 0x0102, inanimatesMetaTiles},
+	{EIT_CHEST, 3,9, 0x05, 0x02, inanimatesMetaTiles},
+	{EIT_CHEST, 3,11, 0x05, 0x06, inanimatesMetaTiles},
+	{EIT_CHEST, 7,3, 0x05, 0x0102, inanimatesMetaTiles},
+	{EIT_CHEST, 10,11, 0x05, 0x05, inanimatesMetaTiles},
+	{EIT_CHEST, 11,11, 0x05, 0x03, inanimatesMetaTiles},
+	//Enemies
+	{EIT_ENEMY, 11,3, 0x03, 0x00, bossMetaTiles},
+	{EIT_ENEMY, 11,7, 0x01, 0x04, normal_enemyMetaTiles},
+	//Interaction  Walls
+	{EIT_WALL, 3,7, 0x07, 0x00, inanimatesMetaTiles},
+	{EIT_WALL, 8,11, 0x06, 0x00, inanimatesMetaTiles},
+	//Gate
+	{EIT_NONE, 11,5, 0x0A, 0x00, inanimatesMetaTiles},
+	//if Hammer Mode
+	{EIT_WALL, 7,5, 0x04, 0x00, inanimatesMetaTiles},
+	{EIT_NONE, 6,5, 0x02, 0x00, inanimatesMetaTiles},
+	{EIT_NONE, 8,5, 0x02, 0x00, inanimatesMetaTiles},
+};
+
+u16 InitializersLen = 15;
+
+TInteract* g_CoordLUT[16][16];
 // === PROTOTYPES =====================================================
 
 INLINE void vp_center(VIEWPORT *vp, int x, int y);
@@ -112,6 +156,16 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 		{
 			MetaTileLoad(x,i,0,dst,inanimatesMetaTiles);
 		}
+	}
+	if(!HammerMode){
+		InitializersLen-=3;
+	}
+	for (u16 i = 0; i < InitializersLen; i++)
+	{
+		TInteract* tempInit=&Initializers[i];
+		MetaTileLoad(tempInit->x,tempInit->y,tempInit->state,dst,tempInit->MetaTiles);
+		tempInit->dst=dst;
+		g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
 	}
 }
 
@@ -187,11 +241,6 @@ int main()
 
 	// Scroll around some
 	int x= 0, y=0;
-	MetaTileLoad(13,1,0x05, g_walls.dstMap, bossMetaTiles);
-	MetaTileLoad(11,7,0x03, g_walls.dstMap, normal_enemyMetaTiles);
-	bool HammerMode=true;
-	bool WallMode=true;
-	bool ChestClosed=true;
 	while(1)
 	{
 		VBlankIntrWait();
@@ -211,69 +260,6 @@ int main()
 		
 		bgt_update(&g_bg, &g_vp);
 		bgt_update(&g_walls, &g_vp);
-
-		//Debug Stuff, Needs to be deleted After finishing
-
-		if(key_hit(KEY_START)){
-			WallMode=!WallMode;
-			if(WallMode){
-				MetaTileLoad(3,3,0x08, g_walls.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(3,7,0x07, g_walls.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(8,11,0x06, g_walls.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(11,5,0x0A, g_walls.dstMap, inanimatesMetaTiles);
-				if(HammerMode){
-					MetaTileLoad(7,5,0x04, g_walls.dstMap, inanimatesMetaTiles);
-				}else{
-					MetaTileLoad(7,5,0x00, g_walls.dstMap, inanimatesMetaTiles);
-				}
-			}else{
-				MetaTileLoad(3,3,0x09, g_walls.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(3,7,0x00, g_walls.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(8,11,0x00, g_walls.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(11,5,0x00, g_walls.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(7,5,0x00, g_walls.dstMap, inanimatesMetaTiles);
-			}
-		}
-		if(key_hit(KEY_SELECT)){
-			HammerMode=!HammerMode;
-			if(!HammerMode){
-				MetaTileLoad(6,5,0x01, g_bg.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(8,5,0x01, g_bg.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(7,5,0x00, g_walls.dstMap, inanimatesMetaTiles);
-			}else{
-				MetaTileLoad(6,5,0x02, g_bg.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(8,5,0x02, g_bg.dstMap, inanimatesMetaTiles);
-				if(WallMode){
-					MetaTileLoad(7,5,0x04, g_walls.dstMap, inanimatesMetaTiles);
-				}else{
-					MetaTileLoad(7,5,0x00, g_walls.dstMap, inanimatesMetaTiles);
-				}
-			}
-		}
-		if(key_hit(KEY_A)){
-			ChestClosed=!ChestClosed;
-			if(ChestClosed){
-				MetaTileLoad(3,5,0x05, g_walls.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(3,9,0x05, g_walls.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(3,11,0x05, g_walls.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(7,3,0x05, g_walls.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(10,11,0x05, g_walls.dstMap, inanimatesMetaTiles);
-				MetaTileLoad(11,11,0x05, g_walls.dstMap, inanimatesMetaTiles);
-			}else{
-				MetaTileLoad(3,5,0x02, g_walls.dstMap, heartsMetaTiles);
-				MetaTileLoad(3,9,0x02, g_walls.dstMap, itemsMetaTiles);
-				MetaTileLoad(3,11,0x03, g_walls.dstMap, itemsMetaTiles);
-				MetaTileLoad(7,3,0x04, g_walls.dstMap, itemsMetaTiles);
-				MetaTileLoad(10,11,0x05, g_walls.dstMap, itemsMetaTiles);
-				MetaTileLoad(11,11,0x06, g_walls.dstMap, itemsMetaTiles);
-			}
-		}
-		
-		
-
-
-		tte_printf("#{es;P}( x, y) = (%d,%d)\n(vx,vy) = (%d,%d)",
-			x, y, g_vp.x, g_vp.y);
 	}
 
 	return 0;
