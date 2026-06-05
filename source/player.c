@@ -5,6 +5,7 @@
 #include "inanimates.h"
 #include "metatile.h"
 #include "interactions.h"
+#include "inventory.h"
 
 #define LINK_SPEED	0x1000
 
@@ -151,6 +152,13 @@ void player_move(TSprite *link)
 	POINT pt=player_target_tile_coord(link);
 	if(link->state==SPR_STATE_SWING){
 		InteractWith(g_CoordLUT[pt.x][pt.y]);
+		if (is_dead())
+		{
+			full_heal();
+			player_init(link, int2fx(96), int2fx(176), 0); //Spawn at Start, as He failed
+			return; //early return as Move Logic No longer applies
+		}
+		
 	}
 	if(can_move_target(link)){
 		link->x += link->vx;
