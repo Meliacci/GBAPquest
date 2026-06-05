@@ -58,7 +58,7 @@ void InteractWith(TInteract* Interactable){
             add_item(Interactable->target); //Call to add Target Item into inventory
             break;
         case EIT_WALL:
-            if (has_item(Interactable->target)) //Check item here
+            if (use_item(Interactable->target)) //Check item here
             {   
                 MetaTileLoad(Interactable->x,Interactable->y,0x00,Interactable->dst,Interactable->MetaTiles);
                 Interactable->type=EIT_NONE;
