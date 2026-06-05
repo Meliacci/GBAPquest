@@ -18,6 +18,7 @@
 #include "metatile.h"
 #include "player.h"
 #include "interactions.h"
+#include "inventory.h"
 
 #define MAX_X_SCROLL 257 //set the  Size in Pixels of the Map
 #define MAX_Y_SCROLL 257
@@ -58,6 +59,7 @@ VIEWPORT g_vp=
 
 TMapInfo g_bg;
 TMapInfo g_walls;
+TMapInfo g_ui;
 
 OBJ_ATTR obj_buffer[128];
 TSprite g_link;
@@ -134,6 +136,26 @@ void vp_set_pos(VIEWPORT *vp, int x, int y)
 
 // --- BACKGROUND???? ---
 
+void ui_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
+	u16 tileSize ,u32 map_width, u32 map_height)
+{
+	memset(bgt, 0, sizeof(TMapInfo));
+
+	bgt->flags= bgnr;
+	bgt->cnt= ctrl;
+	bgt->dstMap= se_mem[BFN_GET(ctrl, BG_SBB)];
+
+	REG_BGCNT[bgnr]= ctrl;
+	REG_BG_OFS[bgnr].x= 0;
+	REG_BG_OFS[bgnr].y= 0;
+
+	bgt->srcMapWidth= map_width;
+	bgt->srcMapHeight= map_height;
+	//SCR_ENTRY *dst= bgt->dstMap;
+	
+	
+}
+
 void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	u16 tileSize ,u32 map_width, u32 map_height)
 {
@@ -150,13 +172,6 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	bgt->srcMapWidth= map_width;
 	bgt->srcMapHeight= map_height;
 	SCR_ENTRY *dst= bgt->dstMap;
-	
-	for (u32 i = 0; i < map_height; i++){
-		for (u32 x = 0; x < map_width; x++)
-		{
-			MetaTileLoad(x,i,0,dst,inanimatesMetaTiles);
-		}
-	}
 	if(!HammerMode){
 		InitializersLen-=3;
 	}
@@ -205,6 +220,10 @@ void bgt_update(TMapInfo *bgt, VIEWPORT *vp)
 	REG_BG_OFS[bgnr].y= bgt->mapY= vy;
 }
 
+void ui_update(TMapInfo *bgt){
+	//load_inv_from_SRAM(); Load only if prompted?
+}
+
 int main()
 {
 	// Init interrupts and VBlank irq.
@@ -230,7 +249,8 @@ int main()
 	
 	wallt_meta_init(&g_walls, 1, BG_CBB(0)|BG_SBB(26) | BG_4BPP | BG_REG_32x32, 16,
 		16, 16);
-	
+		
+	ui_meta_init(&g_ui,0,BG_CBB(0)|BG_SBB(28)| BG_4BPP | BG_REG_32x32, 16, 16, 16);
 	GRIT_CPY(pal_obj_mem, humanPal);
 	GRIT_CPY(tile_mem[4], humanTiles);
 
@@ -251,6 +271,14 @@ int main()
 		player_input(&g_link);
 		player_turn(&g_link);
 		player_move(&g_link);
+		if (key_hit(KEY_SELECT))
+		{
+			save_inv_to_SRAM();
+		}
+		if (key_hit(KEY_START))
+		{
+			load_inv_from_SRAM();
+		}
 		
 		//Screen View Stuff
 		x= fx2int(g_link.x), y= fx2int(g_link.y);
