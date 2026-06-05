@@ -229,6 +229,31 @@ void bgt_update(TMapInfo *bgt, VIEWPORT *vp)
 	REG_BG_OFS[bgnr].y= bgt->mapY= vy;
 }
 
+void wallt_meta_reload_room(TMapInfo *bgt){
+
+	SCR_ENTRY *dst= bgt->dstMap;
+	
+	for (u16 i = 0; i < InitializersLen; i++)
+	{
+		if(!g_CoordChecked[Initializers[i].x][Initializers[i].y]){
+			InteractiveInitializers[i]=Initializers[i];
+		}
+	}
+	u32 copyLen=InitializersLen;
+	if(!HammerMode){
+		copyLen-=3;
+	}
+	for (u16 i = 0; i < InitializersLen; i++)
+	{
+		if(!g_CoordChecked[InteractiveInitializers[i].x][InteractiveInitializers[i].y]){
+			TInteract* tempInit=&InteractiveInitializers[i];
+			MetaTileLoad(tempInit->x,tempInit->y,tempInit->state,dst,tempInit->MetaTiles);
+			tempInit->dst=dst;
+			g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
+		}
+	}
+}
+
 void ui_update(TMapInfo *bgt){
 	for (u32 i = 0; i < bgt->srcMapHeight; i++){
 		for (u32 x = 0; x < bgt->srcMapWidth; x++)
@@ -319,6 +344,7 @@ int main()
 		player_move(&g_link);
 		if(DiedThisFrame){
 			DiedThisFrame=false;
+			wallt_meta_reload_room(&g_walls);
 		}
 		if (key_hit(KEY_SELECT))
 		{
