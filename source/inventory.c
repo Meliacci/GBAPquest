@@ -3,7 +3,7 @@
 
 TItem Inventory[]={
     {ITEM_HEALTH(2),1,1},
-    {ITEM_CONFETTI,0x1,0},
+    {ITEM_CONFETTI,0x4,0},
     {ITEM_HAMMER,0x01,0},
     {ITEM_KEY,01,0},
     {ITEM_SHIELD,0,0},
@@ -11,13 +11,14 @@ TItem Inventory[]={
 };
 
 void load_inv_from_SRAM(){
-    if (sram_mem[20]==0xBB){
+    if (sram_mem[0x20] && sram_mem[0x20]!=0xff){
         for(u32 i=0; i<InventoryLen;i++){
             Inventory[i].state=sram_mem[i*4]<<8;
             Inventory[i].state|=sram_mem[i*4+1] & 0xFF;
             Inventory[i].count=sram_mem[i*4+2];
             Inventory[i].used=sram_mem[i*4+3];
         }
+        sram_mem[0x20]=0x11;
     }
 }
 
