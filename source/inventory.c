@@ -2,12 +2,12 @@
 #include "inventory.h"
 
 TItem Inventory[]={
-    {ITEM_HEALTH(1),1},
-    {ITEM_CONFETTI,0xDC,0},
-    {ITEM_HAMMER,0xBA},
-    {ITEM_KEY,0},
-    {ITEM_SHIELD,0},
-    {ITEM_SWORD,0},
+    {ITEM_HEALTH(2),1,1},
+    {ITEM_CONFETTI,0x1,0},
+    {ITEM_HAMMER,0x01,0},
+    {ITEM_KEY,01,0},
+    {ITEM_SHIELD,0,0},
+    {ITEM_SWORD,01,0},
 };
 
 void load_inv_from_SRAM(){
