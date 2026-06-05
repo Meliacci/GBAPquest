@@ -221,16 +221,24 @@ void bgt_update(TMapInfo *bgt, VIEWPORT *vp)
 }
 
 void ui_update(TMapInfo *bgt){
+	for (u32 i = 0; i < bgt->srcMapHeight; i++){
+		for (u32 x = 0; x < bgt->srcMapWidth; x++)
+		{
+			MetaTileLoad(x,i,0,bgt->dstMap, inanimatesMetaTiles);
+		}
+	}
 	u32 offset=0;
 	for(u32 i=0; i<InventoryLen;i++){
-		for(u32 y=0; y<Inventory[i].count;y++){
-			if(Inventory[i].state>>8){
-					MetaTileLoad(offset+1,1,0x02,bgt->dstMap,heartsMetaTiles);
-				
-			}else{
-				MetaTileLoad(offset+1,1,Inventory[i].state,bgt->dstMap,itemsMetaTiles);
+		if(Inventory[i].state>>8){
+			for(u32 y=0; y<Inventory[i].count;y++){
+				MetaTileLoad(offset+1,1,0x02,bgt->dstMap,heartsMetaTiles);
+				offset++;
 			}
-			offset++;
+		}else{
+			for(u32 y=0; y<Inventory[i].count-Inventory[i].used;y++){
+				MetaTileLoad(offset+1,1,Inventory[i].state,bgt->dstMap,itemsMetaTiles);
+				offset++;
+			}
 		}
     }
 	//load_inv_from_SRAM(); Load only if prompted?
@@ -286,10 +294,12 @@ int main()
 		if (key_hit(KEY_SELECT))
 		{
 			save_inv_to_SRAM();
+			ui_update(&g_ui);
 		}
 		if (key_hit(KEY_START))
 		{
 			load_inv_from_SRAM();
+			ui_update(&g_ui);
 		}
 		if(key_hit(KEY_B)){
 			ui_update(&g_ui);
