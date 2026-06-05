@@ -146,8 +146,8 @@ void ui_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	bgt->dstMap= se_mem[BFN_GET(ctrl, BG_SBB)];
 
 	REG_BGCNT[bgnr]= ctrl;
-	REG_BG_OFS[bgnr].x= 8;
-	REG_BG_OFS[bgnr].y= 8;
+	REG_BG_OFS[bgnr].x= 12;
+	REG_BG_OFS[bgnr].y= 12;
 
 	bgt->srcMapWidth= map_width;
 	bgt->srcMapHeight= map_height;
@@ -228,9 +228,10 @@ void ui_update(TMapInfo *bgt){
 		}
 	}
 	u32 offset=0;
-	for(u32 i=0; i<InventoryLen;i++){
+	for(s32 i=InventoryLen-1; i>=0;i--){
 		if(Inventory[i].state>>8){
-			for(u32 y=0; y<Inventory[i].count;y++){
+			//u32 damage=Inventory[i].used;
+			for(u32 y=0; y<(Inventory[i].count/2);y++){
 				MetaTileLoad(offset+1,1,0x02,bgt->dstMap,heartsMetaTiles);
 				offset++;
 			}

@@ -9,18 +9,17 @@
 #define ITEM_KEY 0x04
 #define ITEM_SHIELD 0x05
 #define ITEM_SWORD 0x06
-#define ITEM_HEALTH(n) 0x0100 | (n & 0x0ff)
-#define MAX_HEALTH(n)  (n & 0x0ff)
+#define ITEM_HEALTH 0x0107
 
 typedef struct TItem
 {
 
     /*
-    * in the Form 0x0HAA
+    * in the Form 0x00AA
     * If Health; 
-    * 0x01XX Where XX is the Max Health and Count is the Current health
+    * 0x0107
+    * 
     * Else;
-    * 0x00XX where XX is the Item
     * 
     * 0x00 nothing (should remain unused)
     * 0x01 Archipelago Item (Should Remain unused)
@@ -33,7 +32,7 @@ typedef struct TItem
     * */
 	u16			state;		
 	u8			count;		//!< Inventory Count of item (Confetti and Health Upgrades)
-	u8			used;		//!< Inventory Count of How many times it has been used (Confetti only)
+	u8			used;		//!< Inventory Count of How many times it has been used (Confetti and Damage Receive)
 
 }ALIGN(4) TItem;
 
@@ -42,6 +41,14 @@ extern TItem Inventory[6];
 
 #endif // __INVENTORY__
 
+
+void add_item(u32 itemID);
+u32 has_item(u32 itemID);
+bool use_item(u32 itemID);
+
+bool is_dead();
+void full_heal();
+void deal_damage();
 
 
 void load_inv_from_SRAM();
