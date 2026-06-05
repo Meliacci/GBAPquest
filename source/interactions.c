@@ -16,6 +16,8 @@ void InteractWith(TInteract* Interactable){
             MetaTileLoad(Interactable->x,Interactable->y,Interactable->state+1,Interactable->dst,Interactable->MetaTiles);
             MetaTileLoad(X_EXTRACT(Interactable->target),Y_EXTRACT(Interactable->target),0x00,Interactable->dst,Interactable->MetaTiles);
             Interactable->type=EIT_NONE;
+            //Needs to Check the 
+            g_CoordChecked[X_EXTRACT(Interactable->target)][Y_EXTRACT(Interactable->target)]=true;
             break;
         case EIT_CHEST:
             if(Interactable->target>>8){
