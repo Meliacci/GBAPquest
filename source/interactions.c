@@ -6,6 +6,7 @@
 #include "items.h"
 #include "inanimates.h"
 
+extern bool g_CoordChecked[16][16];
 void InteractWith(TInteract* Interactable){
     if (Interactable)
     {
@@ -69,5 +70,8 @@ void InteractWith(TInteract* Interactable){
         default:
             break;
         }
+    }
+    if(Interactable->type==EIT_NONE){//if after Changing Type you are None, Means that you no Longer need to be Interacted and are Checked
+        g_CoordChecked[Interactable->x][Interactable->y]=true;
     }
 }

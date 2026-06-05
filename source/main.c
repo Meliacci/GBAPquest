@@ -113,6 +113,7 @@ TInteract InteractiveInitializers[15];
 u16 InitializersLen = 15;
 
 TInteract* g_CoordLUT[16][16];
+bool g_CoordChecked[16][16];
 // === PROTOTYPES =====================================================
 
 INLINE void vp_center(VIEWPORT *vp, int x, int y);
@@ -188,6 +189,7 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 		MetaTileLoad(tempInit->x,tempInit->y,tempInit->state,dst,tempInit->MetaTiles);
 		tempInit->dst=dst;
 		g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
+		g_CoordChecked[tempInit->x][tempInit->y]=false;
 	}
 }
 
