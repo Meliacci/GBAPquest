@@ -28,11 +28,12 @@ void InteractWith(TInteract* Interactable){
             Interactable->state=Interactable->target;
             break;
         case EIT_ENEMY:
-            deal_damage();
             if(has_item(ITEM_SWORD)){//Check that player has the Sword
                 Interactable->state=(Interactable->state)-1;
+            }
                 if(Interactable->state>0){
                     MetaTileLoad(Interactable->x,Interactable->y,Interactable->state,Interactable->dst,Interactable->MetaTiles);
+                    deal_damage();
                 }else{
                     if(Interactable->target>>8){
                         Interactable->MetaTiles=heartsMetaTiles;
@@ -49,7 +50,6 @@ void InteractWith(TInteract* Interactable){
                         Interactable->type=EIT_NONE;
                     }
                 }
-            }
             break;
         case EIT_ITEM:
             Interactable->MetaTiles=inanimatesMetaTiles;
