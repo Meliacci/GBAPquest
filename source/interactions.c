@@ -28,7 +28,8 @@ void InteractWith(TInteract* Interactable){
             Interactable->state=Interactable->target;
             break;
         case EIT_ENEMY:
-            if(true){//Check that player has the Sword
+            deal_damage();
+            if(has_item(ITEM_SWORD)){//Check that player has the Sword
                 Interactable->state=(Interactable->state)-1;
                 if(Interactable->state>0){
                     MetaTileLoad(Interactable->x,Interactable->y,Interactable->state,Interactable->dst,Interactable->MetaTiles);
@@ -57,7 +58,7 @@ void InteractWith(TInteract* Interactable){
             add_item(Interactable->target); //Call to add Target Item into inventory
             break;
         case EIT_WALL:
-            if (true) //Check item here
+            if (has_item(Interactable->target)) //Check item here
             {   
                 MetaTileLoad(Interactable->x,Interactable->y,0x00,Interactable->dst,Interactable->MetaTiles);
                 Interactable->type=EIT_NONE;
