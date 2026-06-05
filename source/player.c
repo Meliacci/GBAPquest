@@ -68,8 +68,13 @@ const OBJ_ATTR cLinkObjs=
 bool can_move_target(TSprite *link){
 	POINT pt= { (fx2int(link->x+link->vx))/16, (fx2int(link->y+link->vy))/16};
 	bool inBounds=!(pt.x<0 ||pt.x>15 || pt.y<0 || pt.y>15);
-	bool GroundIsSteppable=( MetaTileEquals(pt.x,pt.y, 0x0001, g_bg.dstMap, inanimatesMetaTiles) || MetaTileEquals(pt.x, pt.y, 0x0003, g_bg.dstMap, inanimatesMetaTiles));
-	bool WallNotThere=MetaTileEquals(pt.x,pt.y, 0x0000, g_walls.dstMap, inanimatesMetaTiles);
+	bool WallNotThere=false;
+	bool GroundIsSteppable=false;
+	if(inBounds){
+		GroundIsSteppable=( MetaTileEquals(pt.x,pt.y, 0x0001, g_bg.dstMap, inanimatesMetaTiles) || MetaTileEquals(pt.x, pt.y, 0x0003, g_bg.dstMap, inanimatesMetaTiles));
+		WallNotThere=MetaTileEquals(pt.x,pt.y, 0x0000, g_walls.dstMap, inanimatesMetaTiles);
+
+	}
 	return  inBounds&&GroundIsSteppable&&WallNotThere;
 }
 
