@@ -146,8 +146,8 @@ void ui_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	bgt->dstMap= se_mem[BFN_GET(ctrl, BG_SBB)];
 
 	REG_BGCNT[bgnr]= ctrl;
-	REG_BG_OFS[bgnr].x= 12;
-	REG_BG_OFS[bgnr].y= 12;
+	REG_BG_OFS[bgnr].x= 8;
+	REG_BG_OFS[bgnr].y= 8;
 
 	bgt->srcMapWidth= map_width;
 	bgt->srcMapHeight= map_height;
@@ -227,18 +227,23 @@ void ui_update(TMapInfo *bgt){
 			MetaTileLoad(x,i,0,bgt->dstMap, inanimatesMetaTiles);
 		}
 	}
-	u32 offset=0;
-	for(s32 i=InventoryLen-1; i>=0;i--){
-		if(Inventory[i].state>>8){
-			//u32 damage=Inventory[i].used;
-			for(u32 y=0; y<(Inventory[i].count/2);y++){
-				MetaTileLoad(offset+1,1,0x02,bgt->dstMap,heartsMetaTiles);
-				offset++;
-			}
-		}else{
+	s32 offset=0;
+
+	//Health at LeftMost Top
+	u32 HealthIndex=InventoryLen-1;
+		u32 damage=Inventory[HealthIndex].used;//We know it's the last element of the Inventory
+		for(u32 y=0; y<(Inventory[HealthIndex].count);y++){
+			MetaTileLoad(offset+1,1,0x02,bgt->dstMap,heartsMetaTiles);
+			offset++;
+		}
+	//Items at Rightmost Bottom?]
+	offset=0;
+	for(s32 i=InventoryLen-1; i>=0;i--){//We Walk back to Draw from the right and Reduce the Offset
+		if(!(Inventory[i].state>>8)){
 			for(u32 y=0; y<Inventory[i].count-Inventory[i].used;y++){
-				MetaTileLoad(offset+1,1,Inventory[i].state,bgt->dstMap,itemsMetaTiles);
-				offset++;
+				//Let's Abuse this ""Bug"" where You wrap and Step Over One Non-Meta S-Tile when Overflowing X by 0x10 (Every 0x20 you Go down a full meta-tile)
+				MetaTileLoad(0x0D +offset+1,9,Inventory[i].state,bgt->dstMap,itemsMetaTiles);
+				offset--;
 			}
 		}
     }
