@@ -2,18 +2,19 @@
 
 Based on [APquest](https://github.com/ArchipelagoMW/Archipelago/tree/main/worlds/apquest), the work of NewSoupVi for [ARchipelago Multiworld Randomizer](https://github.com/ArchipelagoMW/Archipelago)
 
-Using the [Libtonc for the GBA](https://github.com/devkitPro/libtonc)
+Using the library [Libtonc for the GBA](https://github.com/devkitPro/libtonc)
 
 This is a Simple GBA Compatible Game, meant for Randomization, Learning, and Didactic purposes.
 
-It is as of Writing, Not Even started, so i dunno how you found this public Repo yet.
+It is as of Writing, Able to be Played on GBA Compatible Emulators and Real hardware, tho it lacks QoL and Has Bugs that Involve Saving to SRAM and Loading a file
 
 ## Compatibility to APquest
 
 While this Plays like APquest, it is not compatible with the original, as the need to generate a patch file, handle patching, and connect via a different client, changes enough as to make it impossible to Connect to Orignal APquest Slots.
 
-As of writing this Project is not yet Playable
+As of writing, this Project is Playable But does not Yet have an Archipelago Multiworld Implementation
 
 ## TODOs
-Base Functionality: player, collision, sword, enemy and boss
-Gameplay: hard_mode, hammer, extra_starting_chest
+Triggerable Modes: hard_mode, hammer, extra_starting_chest (Currently Hardcoded Values)
+Sound: BGM, Jingles on Pickup, Defeat, Victory
+Extra: Confetti Cannon functionality
