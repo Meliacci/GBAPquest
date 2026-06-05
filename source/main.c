@@ -231,11 +231,22 @@ void ui_update(TMapInfo *bgt){
 
 	//Health at LeftMost Top
 	u32 HealthIndex=InventoryLen-1;
-		u32 damage=Inventory[HealthIndex].used;//We know it's the last element of the Inventory
-		for(u32 y=0; y<(Inventory[HealthIndex].count);y++){
+	u32 damage=Inventory[HealthIndex].used;//We know it's the last element of the Inventory
+	//Calculate Offset from Left top (1,1)
+	s32 RemainingHealth=Inventory[HealthIndex].count*2-damage;
+	for(s32 y=0; y<Inventory[HealthIndex].count ;y++){//Go Right to Left to update state
+		if(RemainingHealth-2>=0){
 			MetaTileLoad(offset+1,1,0x02,bgt->dstMap,heartsMetaTiles);
-			offset++;
+			RemainingHealth-=2;
+		}else if (RemainingHealth-1>=0)
+		{
+			MetaTileLoad(offset+1,1,0x03,bgt->dstMap,heartsMetaTiles);
+			RemainingHealth-=1;
+		}else{
+			MetaTileLoad(offset+1,1,0x01,bgt->dstMap,heartsMetaTiles);
 		}
+		offset++;
+	}
 	//Items at Rightmost Bottom?]
 	offset=0;
 	for(s32 i=InventoryLen-1; i>=0;i--){//We Walk back to Draw from the right and Reduce the Offset
