@@ -85,30 +85,30 @@ bool ChestClosed=true;
 				MetaTileLoad(11,5,0x0A, g_walls.dstMap, inanimatesMetaTiles);
 */
 
-TInteract Initializers[]={
-	//Buttons
+const TInteract Initializers[]={//No need To Make these Change as it's the Default Configure
+	//Buttons 0
 	{EIT_BUTTON, 3,3, 0x08, XY_MIXER(11,5), inanimatesMetaTiles},
-	//Chests
+	//Chests 1-6
 	{EIT_CHEST, 3,5, 0x05, ITEM_HEALTH, inanimatesMetaTiles},
 	{EIT_CHEST, 3,9, 0x05, ITEM_CONFETTI, inanimatesMetaTiles},
 	{EIT_CHEST, 3,11, 0x05, ITEM_SWORD, inanimatesMetaTiles},
 	{EIT_CHEST, 7,3, 0x05, ITEM_HEALTH, inanimatesMetaTiles},
 	{EIT_CHEST, 10,11, 0x05, ITEM_SHIELD, inanimatesMetaTiles},
 	{EIT_CHEST, 11,11, 0x05, ITEM_HAMMER, inanimatesMetaTiles},
-	//Enemies
+	//Enemies 7-8
 	{EIT_ENEMY, 11,3, 0x03, ITEM_NOTHING, bossMetaTiles},
 	{EIT_ENEMY, 11,7, 0x01, ITEM_KEY, normal_enemyMetaTiles},
-	//Interaction  Walls
+	//Interaction  Walls 9-10
 	{EIT_WALL, 3,7, 0x07, ITEM_KEY, inanimatesMetaTiles},
 	{EIT_WALL, 8,11, 0x06, ITEM_SWORD, inanimatesMetaTiles},
-	//Gate
+	//Gate 11-12
 	{EIT_NONE, 11,5, 0x0A, ITEM_NOTHING, inanimatesMetaTiles},
-	//if Hammer Mode
+	//if Hammer Mode 13-14
 	{EIT_WALL, 7,5, 0x04, ITEM_HAMMER, inanimatesMetaTiles},
 	{EIT_NONE, 6,5, 0x02, ITEM_NOTHING, inanimatesMetaTiles},
 	{EIT_NONE, 8,5, 0x02, ITEM_NOTHING, inanimatesMetaTiles},
 };
-
+TInteract InteractiveInitializers[15];
 u16 InitializersLen = 15;
 
 TInteract* g_CoordLUT[16][16];
@@ -172,12 +172,18 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	bgt->srcMapWidth= map_width;
 	bgt->srcMapHeight= map_height;
 	SCR_ENTRY *dst= bgt->dstMap;
+	
+	for (u16 i = 0; i < InitializersLen; i++)
+	{
+		InteractiveInitializers[i]=Initializers[i];
+	}
+	u32 copyLen=InitializersLen;
 	if(!HammerMode){
-		InitializersLen-=3;
+		copyLen-=3;
 	}
 	for (u16 i = 0; i < InitializersLen; i++)
 	{
-		TInteract* tempInit=&Initializers[i];
+		TInteract* tempInit=&InteractiveInitializers[i];
 		MetaTileLoad(tempInit->x,tempInit->y,tempInit->state,dst,tempInit->MetaTiles);
 		tempInit->dst=dst;
 		g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
