@@ -1,5 +1,6 @@
 #include "tonc.h"
 #include "interactions.h"
+#include "inventory.h"
 #include "metatile.h"
 #include "hearts.h"
 #include "items.h"
@@ -17,11 +18,12 @@ void InteractWith(TInteract* Interactable){
             break;
         case EIT_CHEST:
             if(Interactable->target>>8){
-                Interactable->MetaTiles=heartsMetaTiles;
+                Interactable->MetaTiles=heartsMetaTiles;//The meta Tile index for Upgrade should be 0x02, but the Item id is 0x0107, We Fix this manually, unfortunately
+                MetaTileLoad(Interactable->x,Interactable->y,(Interactable->target&0xFF)-5,Interactable->dst,Interactable->MetaTiles);
             }else{
                 Interactable->MetaTiles=itemsMetaTiles;
+                MetaTileLoad(Interactable->x,Interactable->y,Interactable->target&0xFF,Interactable->dst,Interactable->MetaTiles);
             }
-            MetaTileLoad(Interactable->x,Interactable->y,Interactable->target&0xFF,Interactable->dst,Interactable->MetaTiles);
             Interactable->type=EIT_ITEM;
             Interactable->state=Interactable->target;
             break;
@@ -52,7 +54,7 @@ void InteractWith(TInteract* Interactable){
             Interactable->MetaTiles=inanimatesMetaTiles;
             MetaTileLoad(Interactable->x,Interactable->y,0x00,Interactable->dst,Interactable->MetaTiles);
             Interactable->type=EIT_NONE;
-            Interactable->target; //Call to add Target Item into inventory
+            add_item(Interactable->target); //Call to add Target Item into inventory
             break;
         case EIT_WALL:
             if (true) //Check item here

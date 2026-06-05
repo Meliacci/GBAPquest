@@ -89,24 +89,24 @@ TInteract Initializers[]={
 	//Buttons
 	{EIT_BUTTON, 3,3, 0x08, XY_MIXER(11,5), inanimatesMetaTiles},
 	//Chests
-	{EIT_CHEST, 3,5, 0x05, 0x0102, inanimatesMetaTiles},
-	{EIT_CHEST, 3,9, 0x05, 0x02, inanimatesMetaTiles},
-	{EIT_CHEST, 3,11, 0x05, 0x06, inanimatesMetaTiles},
-	{EIT_CHEST, 7,3, 0x05, 0x0102, inanimatesMetaTiles},
-	{EIT_CHEST, 10,11, 0x05, 0x05, inanimatesMetaTiles},
-	{EIT_CHEST, 11,11, 0x05, 0x03, inanimatesMetaTiles},
+	{EIT_CHEST, 3,5, 0x05, ITEM_HEALTH, inanimatesMetaTiles},
+	{EIT_CHEST, 3,9, 0x05, ITEM_CONFETTI, inanimatesMetaTiles},
+	{EIT_CHEST, 3,11, 0x05, ITEM_SWORD, inanimatesMetaTiles},
+	{EIT_CHEST, 7,3, 0x05, ITEM_HEALTH, inanimatesMetaTiles},
+	{EIT_CHEST, 10,11, 0x05, ITEM_SHIELD, inanimatesMetaTiles},
+	{EIT_CHEST, 11,11, 0x05, ITEM_HAMMER, inanimatesMetaTiles},
 	//Enemies
-	{EIT_ENEMY, 11,3, 0x03, 0x00, bossMetaTiles},
-	{EIT_ENEMY, 11,7, 0x01, 0x04, normal_enemyMetaTiles},
+	{EIT_ENEMY, 11,3, 0x03, ITEM_NOTHING, bossMetaTiles},
+	{EIT_ENEMY, 11,7, 0x01, ITEM_KEY, normal_enemyMetaTiles},
 	//Interaction  Walls
-	{EIT_WALL, 3,7, 0x07, 0x00, inanimatesMetaTiles},
-	{EIT_WALL, 8,11, 0x06, 0x00, inanimatesMetaTiles},
+	{EIT_WALL, 3,7, 0x07, ITEM_NOTHING, inanimatesMetaTiles},
+	{EIT_WALL, 8,11, 0x06, ITEM_NOTHING, inanimatesMetaTiles},
 	//Gate
-	{EIT_NONE, 11,5, 0x0A, 0x00, inanimatesMetaTiles},
+	{EIT_NONE, 11,5, 0x0A, ITEM_NOTHING, inanimatesMetaTiles},
 	//if Hammer Mode
-	{EIT_WALL, 7,5, 0x04, 0x00, inanimatesMetaTiles},
-	{EIT_NONE, 6,5, 0x02, 0x00, inanimatesMetaTiles},
-	{EIT_NONE, 8,5, 0x02, 0x00, inanimatesMetaTiles},
+	{EIT_WALL, 7,5, 0x04, ITEM_NOTHING, inanimatesMetaTiles},
+	{EIT_NONE, 6,5, 0x02, ITEM_NOTHING, inanimatesMetaTiles},
+	{EIT_NONE, 8,5, 0x02, ITEM_NOTHING, inanimatesMetaTiles},
 };
 
 u16 InitializersLen = 15;

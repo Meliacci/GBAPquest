@@ -2,11 +2,11 @@
 #include "inventory.h"
 
 TItem Inventory[]={
-    {ITEM_CONFETTI,0x1,0},
-    {ITEM_HAMMER,0x01,0},
-    {ITEM_KEY,1,0},
-    {ITEM_SHIELD,1,0},
-    {ITEM_SWORD,1,0},
+    {ITEM_CONFETTI,0x00,0},
+    {ITEM_HAMMER,0x00,0},
+    {ITEM_KEY,0,0},
+    {ITEM_SHIELD,0,0},
+    {ITEM_SWORD,0,0},
     {ITEM_HEALTH,1,1},
 };
 
@@ -25,7 +25,7 @@ void add_item(u32 itemID){
         case ITEM_SWORD:
         /* code */
             itemID&=0xff;
-            entry = &Inventory[itemID-1];
+            entry = &Inventory[itemID-2];
             entry->count++;
         break;
         case ITEM_ARCHIPELAGO:
