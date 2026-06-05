@@ -65,6 +65,7 @@ OBJ_ATTR obj_buffer[128];
 TSprite g_link;
 bool HammerMode=true;
 bool WallMode=true;
+bool DiedThisFrame=false;
 bool ChestClosed=true;
 
 /*
@@ -314,6 +315,9 @@ int main()
 		player_input(&g_link);
 		player_turn(&g_link);
 		player_move(&g_link);
+		if(DiedThisFrame){
+			DiedThisFrame=false;
+		}
 		if (key_hit(KEY_SELECT))
 		{
 			save_inv_to_SRAM();

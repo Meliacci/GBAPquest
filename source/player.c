@@ -44,6 +44,7 @@ extern TMapInfo g_walls;
 extern VIEWPORT g_vp;
 extern OBJ_ATTR obj_buffer[];
 extern TInteract* g_CoordLUT[16][16];
+extern bool DiedThisFrame;
 // --------------------------------------------------------------------
 // DECLARATIONS
 // --------------------------------------------------------------------
@@ -154,6 +155,7 @@ void player_move(TSprite *link)
 		InteractWith(g_CoordLUT[pt.x][pt.y]);
 		if (is_dead())
 		{
+			DiedThisFrame=true;
 			full_heal();
 			player_init(link, int2fx(96), int2fx(176), 0); //Spawn at Start, as He failed
 			return; //early return as Move Logic No longer applies
