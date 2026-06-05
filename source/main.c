@@ -265,13 +265,13 @@ int main()
 	memcpy32(&tile_mem[0][64], bossTiles, bossTilesLen / sizeof(u32));
 	memcpy32(&tile_mem[0][84], normal_enemyTiles, normal_enemyTilesLen / sizeof(u32));
 	
-	bgt_meta_init(&g_bg, 3, BG_CBB(0)|BG_SBB(30) | BG_4BPP | BG_REG_32x32, BGMetaMap, 16,
+	bgt_meta_init(&g_bg, 3, BG_CBB(0)|BG_SBB(30) | BG_4BPP | BG_REG_32x32|BG_PRIO(2), BGMetaMap, 16,
 		16, 16);
 	
-	wallt_meta_init(&g_walls, 2, BG_CBB(0)|BG_SBB(26) | BG_4BPP | BG_REG_32x32, 16,
+	wallt_meta_init(&g_walls, 2, BG_CBB(0)|BG_SBB(26) | BG_4BPP | BG_REG_32x32|BG_PRIO(2), 16,
 		16, 16);
 		
-	ui_meta_init(&g_ui,1,BG_CBB(0)|BG_SBB(28)| BG_4BPP | BG_REG_32x32, 16, 16, 16);
+	ui_meta_init(&g_ui,1,BG_CBB(0)|BG_SBB(28)| BG_4BPP | BG_REG_32x32 | BG_PRIO(0), 16, 16, 16);
 	GRIT_CPY(pal_obj_mem, humanPal);
 	GRIT_CPY(tile_mem[4], humanTiles);
 
