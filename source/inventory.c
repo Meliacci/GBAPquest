@@ -7,7 +7,7 @@ TItem Inventory[]={
     {ITEM_KEY,0,0},
     {ITEM_SHIELD,0,0},
     {ITEM_SWORD,0,0},
-    {ITEM_HEALTH,1,1},
+    {ITEM_HEALTH,1,0},
 };
 
 
