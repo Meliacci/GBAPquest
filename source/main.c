@@ -99,12 +99,12 @@ TInteract Initializers[]={
 	{EIT_ENEMY, 11,3, 0x03, ITEM_NOTHING, bossMetaTiles},
 	{EIT_ENEMY, 11,7, 0x01, ITEM_KEY, normal_enemyMetaTiles},
 	//Interaction  Walls
-	{EIT_WALL, 3,7, 0x07, ITEM_NOTHING, inanimatesMetaTiles},
-	{EIT_WALL, 8,11, 0x06, ITEM_NOTHING, inanimatesMetaTiles},
+	{EIT_WALL, 3,7, 0x07, ITEM_KEY, inanimatesMetaTiles},
+	{EIT_WALL, 8,11, 0x06, ITEM_SWORD, inanimatesMetaTiles},
 	//Gate
 	{EIT_NONE, 11,5, 0x0A, ITEM_NOTHING, inanimatesMetaTiles},
 	//if Hammer Mode
-	{EIT_WALL, 7,5, 0x04, ITEM_NOTHING, inanimatesMetaTiles},
+	{EIT_WALL, 7,5, 0x04, ITEM_HAMMER, inanimatesMetaTiles},
 	{EIT_NONE, 6,5, 0x02, ITEM_NOTHING, inanimatesMetaTiles},
 	{EIT_NONE, 8,5, 0x02, ITEM_NOTHING, inanimatesMetaTiles},
 };
