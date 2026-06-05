@@ -65,6 +65,7 @@ OBJ_ATTR obj_buffer[128];
 TSprite g_link;
 bool HammerMode=true;
 bool WallMode=true;
+bool DiedThisFrame=false;
 bool ChestClosed=true;
 
 /*
@@ -85,33 +86,34 @@ bool ChestClosed=true;
 				MetaTileLoad(11,5,0x0A, g_walls.dstMap, inanimatesMetaTiles);
 */
 
-TInteract Initializers[]={
-	//Buttons
+const TInteract Initializers[]={//No need To Make these Change as it's the Default Configure
+	//Buttons 0
 	{EIT_BUTTON, 3,3, 0x08, XY_MIXER(11,5), inanimatesMetaTiles},
-	//Chests
-	{EIT_CHEST, 3,5, 0x05, 0x0102, inanimatesMetaTiles},
-	{EIT_CHEST, 3,9, 0x05, 0x02, inanimatesMetaTiles},
-	{EIT_CHEST, 3,11, 0x05, 0x06, inanimatesMetaTiles},
-	{EIT_CHEST, 7,3, 0x05, 0x0102, inanimatesMetaTiles},
-	{EIT_CHEST, 10,11, 0x05, 0x05, inanimatesMetaTiles},
-	{EIT_CHEST, 11,11, 0x05, 0x03, inanimatesMetaTiles},
-	//Enemies
-	{EIT_ENEMY, 11,3, 0x03, 0x00, bossMetaTiles},
-	{EIT_ENEMY, 11,7, 0x01, 0x04, normal_enemyMetaTiles},
-	//Interaction  Walls
-	{EIT_WALL, 3,7, 0x07, 0x00, inanimatesMetaTiles},
-	{EIT_WALL, 8,11, 0x06, 0x00, inanimatesMetaTiles},
-	//Gate
-	{EIT_NONE, 11,5, 0x0A, 0x00, inanimatesMetaTiles},
-	//if Hammer Mode
-	{EIT_WALL, 7,5, 0x04, 0x00, inanimatesMetaTiles},
-	{EIT_NONE, 6,5, 0x02, 0x00, inanimatesMetaTiles},
-	{EIT_NONE, 8,5, 0x02, 0x00, inanimatesMetaTiles},
+	//Chests 1-6
+	{EIT_CHEST, 3,5, 0x05, ITEM_HEALTH, inanimatesMetaTiles},
+	{EIT_CHEST, 3,9, 0x05, ITEM_CONFETTI, inanimatesMetaTiles},
+	{EIT_CHEST, 3,11, 0x05, ITEM_SWORD, inanimatesMetaTiles},
+	{EIT_CHEST, 7,3, 0x05, ITEM_HEALTH, inanimatesMetaTiles},
+	{EIT_CHEST, 10,11, 0x05, ITEM_SHIELD, inanimatesMetaTiles},
+	{EIT_CHEST, 11,11, 0x05, ITEM_HAMMER, inanimatesMetaTiles},
+	//Enemies 7-8
+	{EIT_ENEMY, 11,3, 0x03, ITEM_NOTHING, bossMetaTiles},
+	{EIT_ENEMY, 11,7, 0x01, ITEM_KEY, normal_enemyMetaTiles},
+	//Interaction  Walls 9-10
+	{EIT_WALL, 3,7, 0x07, ITEM_KEY, inanimatesMetaTiles},
+	{EIT_WALL, 8,11, 0x06, ITEM_SWORD, inanimatesMetaTiles},
+	//Gate 11
+	{EIT_NONE, 11,5, 0x0A, ITEM_NOTHING, inanimatesMetaTiles},
+	//if Hammer Mode 12-14
+	{EIT_WALL, 7,5, 0x04, ITEM_HAMMER, inanimatesMetaTiles},
+	{EIT_NONE, 6,5, 0x02, ITEM_NOTHING, inanimatesMetaTiles},
+	{EIT_NONE, 8,5, 0x02, ITEM_NOTHING, inanimatesMetaTiles},
 };
-
+TInteract InteractiveInitializers[15];
 u16 InitializersLen = 15;
 
 TInteract* g_CoordLUT[16][16];
+bool g_CoordChecked[16][16];
 // === PROTOTYPES =====================================================
 
 INLINE void vp_center(VIEWPORT *vp, int x, int y);
@@ -172,15 +174,22 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	bgt->srcMapWidth= map_width;
 	bgt->srcMapHeight= map_height;
 	SCR_ENTRY *dst= bgt->dstMap;
+	
+	for (u16 i = 0; i < InitializersLen; i++)
+	{
+		InteractiveInitializers[i]=Initializers[i];
+	}
+	u32 copyLen=InitializersLen;
 	if(!HammerMode){
-		InitializersLen-=3;
+		copyLen-=3;
 	}
 	for (u16 i = 0; i < InitializersLen; i++)
 	{
-		TInteract* tempInit=&Initializers[i];
+		TInteract* tempInit=&InteractiveInitializers[i];
 		MetaTileLoad(tempInit->x,tempInit->y,tempInit->state,dst,tempInit->MetaTiles);
 		tempInit->dst=dst;
 		g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
+		g_CoordChecked[tempInit->x][tempInit->y]=false;
 	}
 }
 
@@ -220,6 +229,31 @@ void bgt_update(TMapInfo *bgt, VIEWPORT *vp)
 	REG_BG_OFS[bgnr].y= bgt->mapY= vy;
 }
 
+void wallt_meta_reload_room(TMapInfo *bgt){
+
+	SCR_ENTRY *dst= bgt->dstMap;
+	
+	for (u16 i = 0; i < InitializersLen; i++)
+	{
+		if(!g_CoordChecked[Initializers[i].x][Initializers[i].y]){
+			InteractiveInitializers[i]=Initializers[i];
+		}
+	}
+	u32 copyLen=InitializersLen;
+	if(!HammerMode){
+		copyLen-=3;
+	}
+	for (u16 i = 0; i < InitializersLen; i++)
+	{
+		if(!g_CoordChecked[InteractiveInitializers[i].x][InteractiveInitializers[i].y]){
+			TInteract* tempInit=&InteractiveInitializers[i];
+			MetaTileLoad(tempInit->x,tempInit->y,tempInit->state,dst,tempInit->MetaTiles);
+			tempInit->dst=dst;
+			g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
+		}
+	}
+}
+
 void ui_update(TMapInfo *bgt){
 	for (u32 i = 0; i < bgt->srcMapHeight; i++){
 		for (u32 x = 0; x < bgt->srcMapWidth; x++)
@@ -231,11 +265,22 @@ void ui_update(TMapInfo *bgt){
 
 	//Health at LeftMost Top
 	u32 HealthIndex=InventoryLen-1;
-		u32 damage=Inventory[HealthIndex].used;//We know it's the last element of the Inventory
-		for(u32 y=0; y<(Inventory[HealthIndex].count);y++){
+	u32 damage=Inventory[HealthIndex].used;//We know it's the last element of the Inventory
+	//Calculate Offset from Left top (1,1)
+	s32 RemainingHealth=Inventory[HealthIndex].count*2-damage;
+	for(s32 y=0; y<Inventory[HealthIndex].count ;y++){//Go Right to Left to update state
+		if(RemainingHealth-2>=0){
 			MetaTileLoad(offset+1,1,0x02,bgt->dstMap,heartsMetaTiles);
-			offset++;
+			RemainingHealth-=2;
+		}else if (RemainingHealth-1>=0)
+		{
+			MetaTileLoad(offset+1,1,0x03,bgt->dstMap,heartsMetaTiles);
+			RemainingHealth-=1;
+		}else{
+			MetaTileLoad(offset+1,1,0x01,bgt->dstMap,heartsMetaTiles);
 		}
+		offset++;
+	}
 	//Items at Rightmost Bottom?]
 	offset=0;
 	for(s32 i=InventoryLen-1; i>=0;i--){//We Walk back to Draw from the right and Reduce the Offset
@@ -297,6 +342,10 @@ int main()
 		player_input(&g_link);
 		player_turn(&g_link);
 		player_move(&g_link);
+		if(DiedThisFrame){
+			DiedThisFrame=false;
+			wallt_meta_reload_room(&g_walls);
+		}
 		if (key_hit(KEY_SELECT))
 		{
 			save_inv_to_SRAM();
