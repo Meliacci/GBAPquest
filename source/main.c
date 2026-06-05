@@ -146,8 +146,8 @@ void ui_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	bgt->dstMap= se_mem[BFN_GET(ctrl, BG_SBB)];
 
 	REG_BGCNT[bgnr]= ctrl;
-	REG_BG_OFS[bgnr].x= 0;
-	REG_BG_OFS[bgnr].y= 0;
+	REG_BG_OFS[bgnr].x= 8;
+	REG_BG_OFS[bgnr].y= 8;
 
 	bgt->srcMapWidth= map_width;
 	bgt->srcMapHeight= map_height;
@@ -221,6 +221,18 @@ void bgt_update(TMapInfo *bgt, VIEWPORT *vp)
 }
 
 void ui_update(TMapInfo *bgt){
+	u32 offset=0;
+	for(u32 i=0; i<InventoryLen;i++){
+		for(u32 y=0; y<Inventory[i].count;y++){
+			if(Inventory[i].state>>8){
+					MetaTileLoad(offset+1,1,0x02,bgt->dstMap,heartsMetaTiles);
+				
+			}else{
+				MetaTileLoad(offset+1,1,Inventory[i].state,bgt->dstMap,itemsMetaTiles);
+			}
+			offset++;
+		}
+    }
 	//load_inv_from_SRAM(); Load only if prompted?
 }
 
@@ -256,9 +268,9 @@ int main()
 
 	player_init(&g_link, int2fx(96), int2fx(176), 0);
 
-	REG_DISPCNT= DCNT_MODE0 | DCNT_BG1 | DCNT_BG2 | DCNT_OBJ |
+	REG_DISPCNT= DCNT_MODE0 | DCNT_BG0 | DCNT_BG1 | DCNT_BG2 | DCNT_OBJ |
 		DCNT_OBJ_1D;
-
+	ui_update(&g_ui);
 	// Scroll around some
 	int x= 0, y=0;
 	while(1)
@@ -278,6 +290,9 @@ int main()
 		if (key_hit(KEY_START))
 		{
 			load_inv_from_SRAM();
+		}
+		if(key_hit(KEY_B)){
+			ui_update(&g_ui);
 		}
 		
 		//Screen View Stuff
