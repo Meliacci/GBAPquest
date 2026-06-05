@@ -2,12 +2,12 @@
 #include "inventory.h"
 
 TItem Inventory[]={
-    {ITEM_CONFETTI,0x4,0},
+    {ITEM_CONFETTI,0x1,0},
     {ITEM_HAMMER,0x01,0},
-    {ITEM_KEY,01,0},
-    {ITEM_SHIELD,0,0},
-    {ITEM_SWORD,01,0},
-    {ITEM_HEALTH,2,1},
+    {ITEM_KEY,1,0},
+    {ITEM_SHIELD,1,0},
+    {ITEM_SWORD,1,0},
+    {ITEM_HEALTH,1,1},
 };
 
 
@@ -16,22 +16,16 @@ void add_item(u32 itemID){
     TItem *entry;
     switch (itemID)
         {
+        case ITEM_HEALTH:
+            full_heal();
         case ITEM_CONFETTI:
         case ITEM_HAMMER:
         case ITEM_KEY:
         case ITEM_SHIELD:
         case ITEM_SWORD:
         /* code */
-        itemID&=0xff;
-        entry = &Inventory[itemID-1];
-        entry->count++;
-        break;
-        case ITEM_HEALTH:
-            full_heal();
-            /* code */
             itemID&=0xff;
-            entry = &Inventory[itemID-2];
-            entry->count++;
+            entry = &Inventory[itemID-1];
             entry->count++;
         break;
         case ITEM_ARCHIPELAGO:
@@ -92,7 +86,7 @@ bool use_item(u32 itemID){
 
 bool is_dead(){
     TItem *HealthEntry = &Inventory[(ITEM_HEALTH&0xff)-2]; //the Health Entry
-    return HealthEntry->count<=HealthEntry->used;
+    return HealthEntry->count*2<=HealthEntry->used;//Each healthUpgrade absorbs like 2 Points of damage
 }
 void full_heal(){
     TItem *HealthEntry = &Inventory[(ITEM_HEALTH&0xff)-2]; //the Health Entry
@@ -101,7 +95,7 @@ void full_heal(){
 void deal_damage(){
     TItem *HealthEntry = &Inventory[(ITEM_HEALTH&0xff)-2]; //the Health Entry
     HealthEntry->used++;
-    if (!has_item(ITEM_SHIELD))
+    if (!has_item(ITEM_SHIELD))//The Shield Absorbs 1 Damage
     {
         HealthEntry->used++;
     }
