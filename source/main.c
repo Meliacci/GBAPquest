@@ -19,6 +19,7 @@
 #include "player.h"
 #include "interactions.h"
 #include "inventory.h"
+#include "save.h"
 
 #define MAX_X_SCROLL 257 //set the  Size in Pixels of the Map
 #define MAX_Y_SCROLL 257
