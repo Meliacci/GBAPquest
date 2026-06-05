@@ -19,6 +19,7 @@
 #include "player.h"
 #include "interactions.h"
 #include "inventory.h"
+#include "save.h"
 
 #define MAX_X_SCROLL 257 //set the  Size in Pixels of the Map
 #define MAX_Y_SCROLL 257
@@ -232,11 +233,13 @@ void bgt_update(TMapInfo *bgt, VIEWPORT *vp)
 void wallt_meta_reload_room(TMapInfo *bgt){
 
 	SCR_ENTRY *dst= bgt->dstMap;
-	
 	for (u16 i = 0; i < InitializersLen; i++)
 	{
 		if(!g_CoordChecked[Initializers[i].x][Initializers[i].y]){
 			InteractiveInitializers[i]=Initializers[i];
+		}else{
+			const TInteract Blank={EIT_NONE, Initializers[i].x,Initializers[i].y, 0x00, ITEM_NOTHING, inanimatesMetaTiles};
+			InteractiveInitializers[i]=Blank;
 		}
 	}
 	u32 copyLen=InitializersLen;
@@ -245,12 +248,10 @@ void wallt_meta_reload_room(TMapInfo *bgt){
 	}
 	for (u16 i = 0; i < InitializersLen; i++)
 	{
-		if(!g_CoordChecked[InteractiveInitializers[i].x][InteractiveInitializers[i].y]){
 			TInteract* tempInit=&InteractiveInitializers[i];
 			MetaTileLoad(tempInit->x,tempInit->y,tempInit->state,dst,tempInit->MetaTiles);
 			tempInit->dst=dst;
-			g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
-		}
+			g_CoordLUT[tempInit->x][tempInit->y]=tempInit;		
 	}
 }
 
@@ -344,20 +345,26 @@ int main()
 		player_move(&g_link);
 		if(DiedThisFrame){
 			DiedThisFrame=false;
+			full_heal();
+			player_tp(&g_link, int2fx(96), int2fx(176)); //Spawn at Start, as He failed
 			wallt_meta_reload_room(&g_walls);
 		}
 		if (key_hit(KEY_SELECT))
 		{
 			save_inv_to_SRAM();
-			ui_update(&g_ui);
+			save_checks_to_SRAM();
 		}
 		if (key_hit(KEY_START))
 		{
 			load_inv_from_SRAM();
-			ui_update(&g_ui);
+			load_checks_from_SRAM();
+			DiedThisFrame=true;
 		}
-		if(key_hit(KEY_B)){
-			ui_update(&g_ui);
+		if (key_hit(KEY_L))
+		{
+			delete_inv_SRAM();
+			delete_checks_SRAM();
+			DiedThisFrame=true;
 		}
 		
 		//Screen View Stuff
@@ -365,7 +372,7 @@ int main()
 
 		vp_center(&g_vp, x, y);
 		oam_copy(oam_mem, obj_buffer, 128);
-		
+		ui_update(&g_ui);
 		bgt_update(&g_bg, &g_vp);
 		bgt_update(&g_walls, &g_vp);
 	}

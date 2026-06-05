@@ -34,6 +34,7 @@ typedef struct TSprite
 // --------------------------------------------------------------------
 
 void player_init(TSprite *link, u32 x, u32 y, int obj_id);
+void player_tp(TSprite *link, u32 x, u32 y);
 void player_input(TSprite *link);
 
 void player_move(TSprite *link);
