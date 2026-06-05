@@ -115,7 +115,13 @@ void player_init(TSprite *link, u32 x, u32 y, int obj_id)
 
 	oam_copy(&obj_buffer[obj_id], &cLinkObjs, 1);
 }
-
+void player_tp(TSprite *link, u32 x, u32 y){
+	link->x= x;
+	link->y= y;
+	link->vx= link->vy= 0;
+	link->state = SPR_STATE_STAND;
+	link->dir= LOOK_DOWN;
+}
 void player_input(TSprite *link)
 {
 	link->vx= link->vy= 0;
@@ -156,8 +162,6 @@ void player_move(TSprite *link)
 		if (is_dead())
 		{
 			DiedThisFrame=true;
-			full_heal();
-			player_init(link, int2fx(96), int2fx(176), 0); //Spawn at Start, as He failed
 			return; //early return as Move Logic No longer applies
 		}
 		
