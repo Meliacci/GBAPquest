@@ -167,7 +167,7 @@ void player_turn(TSprite *link){
 
 	obj[0].attr1 &= ~(ATTR1_HFLIP | ATTR1_X_MASK);
 	obj[0].attr1 |= BFN_PREP(pt.x, ATTR1_X);
-	obj[0].attr2=dir*4;
+	obj[0].attr2=dir*4|ATTR2_PRIO(1);
 
 	
 }

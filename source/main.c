@@ -18,6 +18,7 @@
 #include "metatile.h"
 #include "player.h"
 #include "interactions.h"
+#include "inventory.h"
 
 #define MAX_X_SCROLL 257 //set the  Size in Pixels of the Map
 #define MAX_Y_SCROLL 257
@@ -58,6 +59,7 @@ VIEWPORT g_vp=
 
 TMapInfo g_bg;
 TMapInfo g_walls;
+TMapInfo g_ui;
 
 OBJ_ATTR obj_buffer[128];
 TSprite g_link;
@@ -134,6 +136,26 @@ void vp_set_pos(VIEWPORT *vp, int x, int y)
 
 // --- BACKGROUND???? ---
 
+void ui_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
+	u16 tileSize ,u32 map_width, u32 map_height)
+{
+	memset(bgt, 0, sizeof(TMapInfo));
+
+	bgt->flags= bgnr;
+	bgt->cnt= ctrl;
+	bgt->dstMap= se_mem[BFN_GET(ctrl, BG_SBB)];
+
+	REG_BGCNT[bgnr]= ctrl;
+	REG_BG_OFS[bgnr].x= 8;
+	REG_BG_OFS[bgnr].y= 8;
+
+	bgt->srcMapWidth= map_width;
+	bgt->srcMapHeight= map_height;
+	//SCR_ENTRY *dst= bgt->dstMap;
+	
+	
+}
+
 void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	u16 tileSize ,u32 map_width, u32 map_height)
 {
@@ -150,13 +172,6 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	bgt->srcMapWidth= map_width;
 	bgt->srcMapHeight= map_height;
 	SCR_ENTRY *dst= bgt->dstMap;
-	
-	for (u32 i = 0; i < map_height; i++){
-		for (u32 x = 0; x < map_width; x++)
-		{
-			MetaTileLoad(x,i,0,dst,inanimatesMetaTiles);
-		}
-	}
 	if(!HammerMode){
 		InitializersLen-=3;
 	}
@@ -205,6 +220,36 @@ void bgt_update(TMapInfo *bgt, VIEWPORT *vp)
 	REG_BG_OFS[bgnr].y= bgt->mapY= vy;
 }
 
+void ui_update(TMapInfo *bgt){
+	for (u32 i = 0; i < bgt->srcMapHeight; i++){
+		for (u32 x = 0; x < bgt->srcMapWidth; x++)
+		{
+			MetaTileLoad(x,i,0,bgt->dstMap, inanimatesMetaTiles);
+		}
+	}
+	s32 offset=0;
+
+	//Health at LeftMost Top
+	u32 HealthIndex=InventoryLen-1;
+		u32 damage=Inventory[HealthIndex].used;//We know it's the last element of the Inventory
+		for(u32 y=0; y<(Inventory[HealthIndex].count);y++){
+			MetaTileLoad(offset+1,1,0x02,bgt->dstMap,heartsMetaTiles);
+			offset++;
+		}
+	//Items at Rightmost Bottom?]
+	offset=0;
+	for(s32 i=InventoryLen-1; i>=0;i--){//We Walk back to Draw from the right and Reduce the Offset
+		if(!(Inventory[i].state>>8)){
+			for(u32 y=0; y<Inventory[i].count-Inventory[i].used;y++){
+				//Let's Abuse this ""Bug"" where You wrap and Step Over One Non-Meta S-Tile when Overflowing X by 0x10 (Every 0x20 you Go down a full meta-tile)
+				MetaTileLoad(0x0D +offset+1,9,Inventory[i].state,bgt->dstMap,itemsMetaTiles);
+				offset--;
+			}
+		}
+    }
+	//load_inv_from_SRAM(); Load only if prompted?
+}
+
 int main()
 {
 	// Init interrupts and VBlank irq.
@@ -225,20 +270,21 @@ int main()
 	memcpy32(&tile_mem[0][64], bossTiles, bossTilesLen / sizeof(u32));
 	memcpy32(&tile_mem[0][84], normal_enemyTiles, normal_enemyTilesLen / sizeof(u32));
 	
-	bgt_meta_init(&g_bg, 2, BG_CBB(0)|BG_SBB(30) | BG_4BPP | BG_REG_32x32, BGMetaMap, 16,
+	bgt_meta_init(&g_bg, 3, BG_CBB(0)|BG_SBB(30) | BG_4BPP | BG_REG_32x32|BG_PRIO(2), BGMetaMap, 16,
 		16, 16);
 	
-	wallt_meta_init(&g_walls, 1, BG_CBB(0)|BG_SBB(26) | BG_4BPP | BG_REG_32x32, 16,
+	wallt_meta_init(&g_walls, 2, BG_CBB(0)|BG_SBB(26) | BG_4BPP | BG_REG_32x32|BG_PRIO(2), 16,
 		16, 16);
-	
+		
+	ui_meta_init(&g_ui,1,BG_CBB(0)|BG_SBB(28)| BG_4BPP | BG_REG_32x32 | BG_PRIO(0), 16, 16, 16);
 	GRIT_CPY(pal_obj_mem, humanPal);
 	GRIT_CPY(tile_mem[4], humanTiles);
 
 	player_init(&g_link, int2fx(96), int2fx(176), 0);
 
-	REG_DISPCNT= DCNT_MODE0 | DCNT_BG1 | DCNT_BG2 | DCNT_OBJ |
+	REG_DISPCNT= DCNT_MODE0 | DCNT_BG1 | DCNT_BG2 | DCNT_BG3 | DCNT_OBJ |
 		DCNT_OBJ_1D;
-
+	ui_update(&g_ui);
 	// Scroll around some
 	int x= 0, y=0;
 	while(1)
@@ -251,6 +297,19 @@ int main()
 		player_input(&g_link);
 		player_turn(&g_link);
 		player_move(&g_link);
+		if (key_hit(KEY_SELECT))
+		{
+			save_inv_to_SRAM();
+			ui_update(&g_ui);
+		}
+		if (key_hit(KEY_START))
+		{
+			load_inv_from_SRAM();
+			ui_update(&g_ui);
+		}
+		if(key_hit(KEY_B)){
+			ui_update(&g_ui);
+		}
 		
 		//Screen View Stuff
 		x= fx2int(g_link.x), y= fx2int(g_link.y);
