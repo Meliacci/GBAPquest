@@ -64,7 +64,7 @@ TMapInfo g_ui;
 
 OBJ_ATTR obj_buffer[128];
 TSprite g_link;
-bool HammerMode=true;
+bool HammerMode=false;
 bool WallMode=true;
 bool DiedThisFrame=false;
 bool ChestClosed=true;
@@ -195,11 +195,21 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	}
 	for (u16 i = 0; i < InitializersLen; i++)
 	{
-		TInteract* tempInit=&InteractiveInitializers[i];
-		MetaTileLoad(tempInit->x,tempInit->y,tempInit->state,dst,tempInit->MetaTiles);
-		tempInit->dst=dst;
-		g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
-		g_CoordChecked[tempInit->x][tempInit->y]=false;
+		if (i<copyLen)
+		{		
+			TInteract* tempInit=&InteractiveInitializers[i];
+			MetaTileLoad(tempInit->x,tempInit->y,tempInit->state,dst,tempInit->MetaTiles);
+			tempInit->dst=dst;
+			g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
+			g_CoordChecked[tempInit->x][tempInit->y]=false;
+		}else{//If it's not hammer mode this will be the last 3 Elements, which have the Blocking Walls, Remove them
+			TInteract* tempInit=&InteractiveInitializers[i];
+			MetaTileLoad(tempInit->x,tempInit->y,0x00,dst,tempInit->MetaTiles);
+			tempInit->dst=dst;
+			g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
+			g_CoordChecked[tempInit->x][tempInit->y]=false;
+		}
+
 	}
 }
 
@@ -273,10 +283,18 @@ void wallt_meta_reload_room(TMapInfo *bgt){
 	}
 	for (u16 i = 0; i < InitializersLen; i++)
 	{
+		if (i<copyLen)
+		{		
 			TInteract* tempInit=&InteractiveInitializers[i];
 			MetaTileLoad(tempInit->x,tempInit->y,tempInit->state,dst,tempInit->MetaTiles);
 			tempInit->dst=dst;
-			g_CoordLUT[tempInit->x][tempInit->y]=tempInit;		
+			g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
+		}else{//If it's not hammer mode this will be the last 3 Elements, which have the Blocking Walls, Remove them
+			TInteract* tempInit=&InteractiveInitializers[i];
+			MetaTileLoad(tempInit->x,tempInit->y,0x00,dst,tempInit->MetaTiles);
+			tempInit->dst=dst;
+			g_CoordLUT[tempInit->x][tempInit->y]=tempInit;
+		}
 	}
 }
 
@@ -376,11 +394,7 @@ int main()
 		}
 		if (key_hit(KEY_SELECT))
 		{
-			if(key_is_up(KEY_DIR)){
-				save_inv_to_SRAM();
-				save_checks_to_SRAM();
-			}
-			else if(key_is_down(KEY_LEFT)){
+			if(key_is_down(KEY_LEFT)){
 				load_inv_from_SRAM();
 				load_checks_from_SRAM();
 				DiedThisFrame=true;
@@ -388,23 +402,21 @@ int main()
 				delete_inv_SRAM();
 				delete_checks_SRAM();
 				DiedThisFrame=true;
-			}else if(key_is_down(KEY_DOWN)){
-				HardMode=!HardMode;
-				DiedThisFrame=true;
+			}else if(!(key_tri_vert()||key_tri_horz())){
+				save_inv_to_SRAM();
+				save_checks_to_SRAM();
 			}
 			
 		}
 		if (key_hit(KEY_START))
 		{
-			
-		}
-		if (key_hit(KEY_L))
-		{
-			
-		}
-		if (key_hit(KEY_R))
-		{
-			
+			if(key_is_down(KEY_DOWN)){
+				HardMode=!HardMode;
+				DiedThisFrame=true;
+			}else{
+				HammerMode=!HammerMode;
+				DiedThisFrame=true;
+			}
 		}
 		
 		//Screen View Stuff

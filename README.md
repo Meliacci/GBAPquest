@@ -15,7 +15,8 @@ B-BUTTON: Interact
 SELECT: Save
 SELECT+D-PAD-LEFT: Load Save and Reload
 SELECT+D-PAD-RIGHT: Delete Save and Reload
-SELECT+D-PAD-DOWN: Toggle HardMode and Reload 
+START: Toggle Hammer Mode (Bugged)
+START+D-PAD-DOWN: Toggle HardMode
 
 ## Compatibility to APquest
 
