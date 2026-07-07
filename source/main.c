@@ -376,25 +376,35 @@ int main()
 		}
 		if (key_hit(KEY_SELECT))
 		{
-			save_inv_to_SRAM();
-			save_checks_to_SRAM();
+			if(key_is_up(KEY_DIR)){
+				save_inv_to_SRAM();
+				save_checks_to_SRAM();
+			}
+			else if(key_is_down(KEY_LEFT)){
+				load_inv_from_SRAM();
+				load_checks_from_SRAM();
+				DiedThisFrame=true;
+			}else if(key_is_down(KEY_RIGHT)){
+				delete_inv_SRAM();
+				delete_checks_SRAM();
+				DiedThisFrame=true;
+			}else if(key_is_down(KEY_DOWN)){
+				HardMode=!HardMode;
+				DiedThisFrame=true;
+			}
+			
 		}
 		if (key_hit(KEY_START))
 		{
-			load_inv_from_SRAM();
-			load_checks_from_SRAM();
-			DiedThisFrame=true;
+			
 		}
 		if (key_hit(KEY_L))
 		{
-			delete_inv_SRAM();
-			delete_checks_SRAM();
-			DiedThisFrame=true;
+			
 		}
 		if (key_hit(KEY_R))
 		{
-			HardMode=!HardMode;
-			DiedThisFrame=true;
+			
 		}
 		
 		//Screen View Stuff
