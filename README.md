@@ -8,6 +8,21 @@ This is a Simple GBA Compatible Game, meant for Randomization, Learning, and Did
 
 It is as of Writing, Able to be Played on GBA Compatible Emulators and Real hardware, tho it lacks QoL and Has Bugs that Involve Saving to SRAM and Loading a file
 
+## Controls
+
+D-PAD: Movement
+B-BUTTON: Interact
+SELECT: Save
+SELECT+D-PAD-LEFT: Load Save and Reload
+SELECT+D-PAD-RIGHT: Delete Save and Reload
+
+### Debug Toggles
+
+These Will Make you Restart the Whole Game to it's initial Values
+
+START: Toggle Hammer Mode (Bugged)
+START+D-PAD-DOWN: Toggle HardMode
+START+D-PAD-RIGHT: Toggle Extra Chest
 ## Compatibility to APquest
 
 While this Plays like APquest, it is not compatible with the original, as the need to generate a patch file, handle patching, and connect via a different client, changes enough as to make it impossible to Connect to Orignal APquest Slots.
@@ -15,6 +30,6 @@ While this Plays like APquest, it is not compatible with the original, as the ne
 As of writing, this Project is Playable But does not Yet have an Archipelago Multiworld Implementation
 
 ## TODOs
-Triggerable Modes: hard_mode, hammer, extra_starting_chest (Currently Hardcoded Values)
+~~Triggerable Modes:~~ DONE
 Sound: BGM, Jingles on Pickup, Defeat, Victory
 Extra: Confetti Cannon functionality

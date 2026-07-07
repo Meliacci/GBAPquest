@@ -12,7 +12,7 @@ void load_inv_from_SRAM(){
             Inventory[i].count=sram_mem[i*4+2];
             Inventory[i].used=sram_mem[i*4+3];
         }
-        sram_mem[0x20]=0x11;
+        sram_mem[SAVE_FLAG_OFFS]=0x11;
     }
 }
 

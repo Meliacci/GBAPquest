@@ -101,3 +101,18 @@ void deal_damage(){
     }
     
 }
+void reset_inventory(){
+    TItem BaseInventory[]={
+        {ITEM_CONFETTI,0x00,0},
+        {ITEM_HAMMER,0x00,0},
+        {ITEM_KEY,0,0},
+        {ITEM_SHIELD,0,0},
+        {ITEM_SWORD,0,0},
+        {ITEM_HEALTH,1,0},
+    };
+
+    for (int i = 0; i < InventoryLen; i++)
+    {
+        Inventory[i]=BaseInventory[i];
+    }
+}
