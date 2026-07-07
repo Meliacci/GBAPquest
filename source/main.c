@@ -391,6 +391,11 @@ int main()
 			delete_checks_SRAM();
 			DiedThisFrame=true;
 		}
+		if (key_hit(KEY_R))
+		{
+			HardMode=!HardMode;
+			DiedThisFrame=true;
+		}
 		
 		//Screen View Stuff
 		x= fx2int(g_link.x), y= fx2int(g_link.y);
