@@ -12,8 +12,8 @@ extern bool HardMode;
 
 extern bool g_CoordChecked[16][16];
 
-
-
+const int HardModeHealthToSprite[6]={1,2,3,4,5,6};
+const int EasyModeHealthToSprite[6]={1,8,3,4,5,6};// SHOULDN'T be that high on Easy mode but just in case- it'll display the Health, even if it shouldn't be that high
 
 void InteractWith(TInteract* Interactable){
     if (Interactable)
@@ -67,7 +67,7 @@ void InteractWith(TInteract* Interactable){
                 Interactable->target=(Interactable->target)-1;
             }
                 if(Interactable->target>0){//still Above 0 health
-                    //TODO: Load Sprite Depending on Health State
+                    Interactable->state=(HardMode?HardModeHealthToSprite:EasyModeHealthToSprite)[Interactable->target-1];
                     MetaTileLoad(Interactable->x,Interactable->y,Interactable->state,Interactable->dst,Interactable->MetaTiles);
                     deal_damage();
                 }else{//Boss dead
