@@ -5,14 +5,22 @@
 #include "hearts.h"
 #include "items.h"
 #include "inanimates.h"
+//---------External------------
+
+extern bool HardMode;
+//---------
 
 extern bool g_CoordChecked[16][16];
+
+
+
+
 void InteractWith(TInteract* Interactable){
     if (Interactable)
     {
         switch (Interactable->type)
         {
-            case EIT_BUTTON:
+        case EIT_BUTTON:
             MetaTileLoad(Interactable->x,Interactable->y,Interactable->state+1,Interactable->dst,Interactable->MetaTiles);
             MetaTileLoad(X_EXTRACT(Interactable->target),Y_EXTRACT(Interactable->target),0x00,Interactable->dst,Interactable->MetaTiles);
             Interactable->type=EIT_NONE;
@@ -52,6 +60,20 @@ void InteractWith(TInteract* Interactable){
                         MetaTileLoad(Interactable->x,Interactable->y,0x00,Interactable->dst,Interactable->MetaTiles);
                         Interactable->type=EIT_NONE;
                     }
+                }
+            break;
+        case EIT_BOSS://Practically the Same Logic as EIT_ENEMY
+            if(has_item(ITEM_SWORD)){//Check that player has the Sword
+                Interactable->target=(Interactable->target)-1;
+            }
+                if(Interactable->target>0){//still Above 0 health
+                    //TODO: Load Sprite Depending on Health State
+                    MetaTileLoad(Interactable->x,Interactable->y,Interactable->state,Interactable->dst,Interactable->MetaTiles);
+                    deal_damage();
+                }else{//Boss dead
+                    Interactable->MetaTiles=inanimatesMetaTiles;
+                    MetaTileLoad(Interactable->x,Interactable->y,0x00,Interactable->dst,Interactable->MetaTiles);//Unload Boss
+                    Interactable->type=EIT_NONE;
                 }
             break;
         case EIT_ITEM:
