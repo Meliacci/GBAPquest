@@ -30,6 +30,6 @@ While this Plays like APquest, it is not compatible with the original, as the ne
 As of writing, this Project is Playable But does not Yet have an Archipelago Multiworld Implementation
 
 ## TODOs
-Triggerable Modes: hammer(currently Bugged), extra_starting_chest (Currently Hardcoded Values)
+~~Triggerable Modes:~~ DONE
 Sound: BGM, Jingles on Pickup, Defeat, Victory
 Extra: Confetti Cannon functionality
