@@ -49,3 +49,4 @@ bool use_item(u32 itemID);
 bool is_dead();
 void full_heal();
 void deal_damage();
+void reset_inventory();

@@ -432,6 +432,11 @@ int main()
 				HammerMode=!HammerMode;
 				DiedThisFrame=true;
 			}
+			
+			wallt_meta_init(&g_walls, 2, BG_CBB(0)|BG_SBB(26) | BG_4BPP | BG_REG_32x32|BG_PRIO(2), 16,
+				16, 16);
+			reset_inventory();
+
 		}
 		
 		//Screen View Stuff
