@@ -97,7 +97,7 @@ const TInteract Initializers[]={//No need To Make these Change as it's the Defau
 	{EIT_CHEST, 3,11, 0x05, ITEM_SWORD, inanimatesMetaTiles},
 	{EIT_CHEST, 7,3, 0x05, ITEM_HEALTH, inanimatesMetaTiles},
 	{EIT_CHEST, 10,11, 0x05, ITEM_SHIELD, inanimatesMetaTiles},
-	{EIT_CHEST, 11,11, 0x05, ITEM_HAMMER, inanimatesMetaTiles},
+	{EIT_CHEST, 11,11, 0x05, ITEM_HAMMER, inanimatesMetaTiles},//0x06, Hammer Turns into Confetti when not in hammer mode
 	//Enemies 7-8
 	{EIT_BOSS, 11,3, 0x08, 2, bossMetaTiles},//Let's start this one at EasyMode
 	{EIT_ENEMY, 11,7, 0x01, ITEM_KEY, normal_enemyMetaTiles},//this one is also Easy mode, Hardmode Starts at 2
@@ -184,6 +184,9 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	u32 copyLen=InitializersLen;
 	if(!HammerMode){
 		copyLen-=3;
+		InteractiveInitializers[6].target=ITEM_CONFETTI;
+	}else{
+		InteractiveInitializers[6].target=ITEM_HAMMER;
 	}
 	if(!HardMode){
 		InteractiveInitializers[7]=(TInteract){EIT_BOSS, 11,3, 0x08, 2, bossMetaTiles};
@@ -267,6 +270,14 @@ void wallt_meta_reload_room(TMapInfo *bgt){
 				}else{
 					InteractiveInitializers[i].state=0x05;//0x05 is chest
 				}
+			}else if(i==6){
+				if (HammerMode)
+				{
+					InteractiveInitializers[6].target=ITEM_HAMMER;
+				}else{
+					InteractiveInitializers[6].target=ITEM_CONFETTI;
+				}
+				
 			}else if (i==7)//HardCodedEnemyAndBossIndex
 			{
 				if(!HardMode){
