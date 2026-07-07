@@ -314,7 +314,7 @@ int main()
 	memcpy32(&tile_mem[0][32], itemsTiles, itemsTilesLen / sizeof(u32));
 	memcpy32(&tile_mem[0][53], heartsTiles, heartsTilesLen / sizeof(u32));
 	memcpy32(&tile_mem[0][64], bossTiles, bossTilesLen / sizeof(u32));
-	memcpy32(&tile_mem[0][84], normal_enemyTiles, normal_enemyTilesLen / sizeof(u32));
+	memcpy32(&tile_mem[0][85], normal_enemyTiles, normal_enemyTilesLen / sizeof(u32));
 	
 	bgt_meta_init(&g_bg, 3, BG_CBB(0)|BG_SBB(30) | BG_4BPP | BG_REG_32x32|BG_PRIO(2), BGMetaMap, 16,
 		16, 16);
