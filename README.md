@@ -15,9 +15,11 @@ B-BUTTON: Interact
 SELECT: Save
 SELECT+D-PAD-LEFT: Load Save and Reload
 SELECT+D-PAD-RIGHT: Delete Save and Reload
+
+### Debug Toggles
 START: Toggle Hammer Mode (Bugged)
 START+D-PAD-DOWN: Toggle HardMode
-
+START+D-PAD-RIGHT: Toggle Extra Chest
 ## Compatibility to APquest
 
 While this Plays like APquest, it is not compatible with the original, as the need to generate a patch file, handle patching, and connect via a different client, changes enough as to make it impossible to Connect to Orignal APquest Slots.
@@ -25,6 +27,6 @@ While this Plays like APquest, it is not compatible with the original, as the ne
 As of writing, this Project is Playable But does not Yet have an Archipelago Multiworld Implementation
 
 ## TODOs
-Triggerable Modes: hammer, extra_starting_chest (Currently Hardcoded Values)
+Triggerable Modes: hammer(currently Bugged), extra_starting_chest (Currently Hardcoded Values)
 Sound: BGM, Jingles on Pickup, Defeat, Victory
 Extra: Confetti Cannon functionality

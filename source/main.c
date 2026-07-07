@@ -67,7 +67,7 @@ TSprite g_link;
 bool HammerMode=false;
 bool WallMode=true;
 bool DiedThisFrame=false;
-bool ChestClosed=true;
+bool ExtraChest=true;
 bool HardMode=true; //Will probably Need to Be `Volatile`d?? haven't tested this yet
 
 /*
@@ -93,7 +93,7 @@ const TInteract Initializers[]={//No need To Make these Change as it's the Defau
 	{EIT_BUTTON, 3,3, 0x08, XY_MIXER(11,5), inanimatesMetaTiles},
 	//Chests 1-6
 	{EIT_CHEST, 3,5, 0x05, ITEM_HEALTH, inanimatesMetaTiles},
-	{EIT_CHEST, 3,9, 0x05, ITEM_CONFETTI, inanimatesMetaTiles},
+	{EIT_CHEST, 3,9, 0x05, ITEM_CONFETTI, inanimatesMetaTiles},//0x02 Confetti Extra Chest
 	{EIT_CHEST, 3,11, 0x05, ITEM_SWORD, inanimatesMetaTiles},
 	{EIT_CHEST, 7,3, 0x05, ITEM_HEALTH, inanimatesMetaTiles},
 	{EIT_CHEST, 10,11, 0x05, ITEM_SHIELD, inanimatesMetaTiles},
@@ -191,7 +191,11 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	}else{
 		InteractiveInitializers[7]=(TInteract){EIT_BOSS, 11,3, 0x05, 5, bossMetaTiles};
 		InteractiveInitializers[8].state=0x02;
-
+	}
+	if(!ExtraChest){
+		InteractiveInitializers[2].state=0x00;
+	}else{
+		InteractiveInitializers[2].state=0x05;//0x05 is chest
 	}
 	for (u16 i = 0; i < InitializersLen; i++)
 	{
@@ -256,19 +260,25 @@ void wallt_meta_reload_room(TMapInfo *bgt){
 	{
 		if(!g_CoordChecked[Initializers[i].x][Initializers[i].y]){
 			InteractiveInitializers[i]=Initializers[i];
-			if (i==7)//HardCodedEnemyAndBossIndex
+			
+			if(i==2){
+				if(!ExtraChest){
+					InteractiveInitializers[i].state=0x00;
+				}else{
+					InteractiveInitializers[i].state=0x05;//0x05 is chest
+				}
+			}else if (i==7)//HardCodedEnemyAndBossIndex
 			{
 				if(!HardMode){
 					InteractiveInitializers[i]=(TInteract){EIT_BOSS, 11,3, 0x08, 2, bossMetaTiles};
 				}else{
 					InteractiveInitializers[i]=(TInteract){EIT_BOSS, 11,3, 0x05, 5, bossMetaTiles};
 				}
-			}
-			if(i==8){
+			}else if(i==8){
 				if(!HardMode){
-					InteractiveInitializers[8].state=0x01;
+					InteractiveInitializers[i].state=0x01;
 				}else{
-					InteractiveInitializers[8].state=0x02;
+					InteractiveInitializers[i].state=0x02;
 				}
 			}
 
@@ -281,6 +291,7 @@ void wallt_meta_reload_room(TMapInfo *bgt){
 	if(!HammerMode){
 		copyLen-=3;
 	}
+	
 	for (u16 i = 0; i < InitializersLen; i++)
 	{
 		if (i<copyLen)
@@ -413,7 +424,11 @@ int main()
 			if(key_is_down(KEY_DOWN)){
 				HardMode=!HardMode;
 				DiedThisFrame=true;
-			}else{
+			}else if(key_is_down(KEY_RIGHT)){
+				ExtraChest=!ExtraChest;
+				DiedThisFrame=true;
+			}
+			else{
 				HammerMode=!HammerMode;
 				DiedThisFrame=true;
 			}
