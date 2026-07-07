@@ -68,6 +68,7 @@ bool HammerMode=true;
 bool WallMode=true;
 bool DiedThisFrame=false;
 bool ChestClosed=true;
+bool HardMode=true; //Will probably Need to Be `Volatile`d?? haven't tested this yet
 
 /*
 				Buttons
@@ -98,8 +99,8 @@ const TInteract Initializers[]={//No need To Make these Change as it's the Defau
 	{EIT_CHEST, 10,11, 0x05, ITEM_SHIELD, inanimatesMetaTiles},
 	{EIT_CHEST, 11,11, 0x05, ITEM_HAMMER, inanimatesMetaTiles},
 	//Enemies 7-8
-	{EIT_ENEMY, 11,3, 0x03, ITEM_NOTHING, bossMetaTiles},
-	{EIT_ENEMY, 11,7, 0x01, ITEM_KEY, normal_enemyMetaTiles},
+	{EIT_BOSS, 11,3, 0x08, 2, bossMetaTiles},//Let's start this one at EasyMode
+	{EIT_ENEMY, 11,7, 0x01, ITEM_KEY, normal_enemyMetaTiles},//this one is also Easy mode, Hardmode Starts at 2
 	//Interaction  Walls 9-10
 	{EIT_WALL, 3,7, 0x07, ITEM_KEY, inanimatesMetaTiles},
 	{EIT_WALL, 8,11, 0x06, ITEM_SWORD, inanimatesMetaTiles},
@@ -184,6 +185,14 @@ void wallt_meta_init(TMapInfo *bgt, int bgnr, u32 ctrl,
 	if(!HammerMode){
 		copyLen-=3;
 	}
+	if(!HardMode){
+		InteractiveInitializers[7]=(TInteract){EIT_BOSS, 11,3, 0x08, 2, bossMetaTiles};
+		InteractiveInitializers[8].state=0x01;
+	}else{
+		InteractiveInitializers[7]=(TInteract){EIT_BOSS, 11,3, 0x05, 5, bossMetaTiles};
+		InteractiveInitializers[8].state=0x02;
+
+	}
 	for (u16 i = 0; i < InitializersLen; i++)
 	{
 		TInteract* tempInit=&InteractiveInitializers[i];
@@ -237,6 +246,22 @@ void wallt_meta_reload_room(TMapInfo *bgt){
 	{
 		if(!g_CoordChecked[Initializers[i].x][Initializers[i].y]){
 			InteractiveInitializers[i]=Initializers[i];
+			if (i==7)//HardCodedEnemyAndBossIndex
+			{
+				if(!HardMode){
+					InteractiveInitializers[i]=(TInteract){EIT_BOSS, 11,3, 0x08, 2, bossMetaTiles};
+				}else{
+					InteractiveInitializers[i]=(TInteract){EIT_BOSS, 11,3, 0x05, 5, bossMetaTiles};
+				}
+			}
+			if(i==8){
+				if(!HardMode){
+					InteractiveInitializers[8].state=0x01;
+				}else{
+					InteractiveInitializers[8].state=0x02;
+				}
+			}
+
 		}else{
 			const TInteract Blank={EIT_NONE, Initializers[i].x,Initializers[i].y, 0x00, ITEM_NOTHING, inanimatesMetaTiles};
 			InteractiveInitializers[i]=Blank;
@@ -314,7 +339,7 @@ int main()
 	memcpy32(&tile_mem[0][32], itemsTiles, itemsTilesLen / sizeof(u32));
 	memcpy32(&tile_mem[0][53], heartsTiles, heartsTilesLen / sizeof(u32));
 	memcpy32(&tile_mem[0][64], bossTiles, bossTilesLen / sizeof(u32));
-	memcpy32(&tile_mem[0][84], normal_enemyTiles, normal_enemyTilesLen / sizeof(u32));
+	memcpy32(&tile_mem[0][85], normal_enemyTiles, normal_enemyTilesLen / sizeof(u32));
 	
 	bgt_meta_init(&g_bg, 3, BG_CBB(0)|BG_SBB(30) | BG_4BPP | BG_REG_32x32|BG_PRIO(2), BGMetaMap, 16,
 		16, 16);
@@ -364,6 +389,11 @@ int main()
 		{
 			delete_inv_SRAM();
 			delete_checks_SRAM();
+			DiedThisFrame=true;
+		}
+		if (key_hit(KEY_R))
+		{
+			HardMode=!HardMode;
 			DiedThisFrame=true;
 		}
 		

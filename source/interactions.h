@@ -13,7 +13,7 @@
 
 enum EInteractType
 {
-	EIT_NONE= 0, EIT_CHEST, EIT_BUTTON, EIT_ENEMY, EIT_WALL, EIT_ITEM
+	EIT_NONE= 0, EIT_CHEST, EIT_BUTTON, EIT_ENEMY, EIT_WALL, EIT_ITEM, EIT_BOSS
 };
 
 // === CLASSES ========================================================
@@ -46,6 +46,11 @@ typedef struct TInteract
     * 
     * Health indicated by State
     * Once Health Reaches 0, Replace with Target Item at Coords
+    * 
+    * EIT_BOSS
+    * 
+    * This Needs a Bit more Work. He will never have an item himself.
+    * Target indicates True Health, while State Gives out the Initial tiles for the Interactable 
     * 
     * EIT_WALL
     * 
