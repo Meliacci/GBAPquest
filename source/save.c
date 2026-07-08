@@ -71,15 +71,24 @@ void delete_checks_SRAM(){
 void load_Flags(){
     if(sram_mem[SAVE_FLAG_OFFS] && sram_mem[SAVE_FLAG_OFFS]!=0xff){
         sram_mem[SAVE_FLAG_OFFS]=0x11;
+        HardMode=sram_mem[SAVE_FLAG_OFFS+1];
+        HammerMode=sram_mem[SAVE_FLAG_OFFS+2];
+        ExtraChest=sram_mem[SAVE_FLAG_OFFS+3];
     }
 }
 
 void save_Flags(){
     sram_mem[SAVE_FLAG_OFFS]=0xBB;
+    sram_mem[SAVE_FLAG_OFFS+1]=HammerMode;
+    sram_mem[SAVE_FLAG_OFFS+2]=HardMode;
+    sram_mem[SAVE_FLAG_OFFS+3]=ExtraChest;
 }
 
 void delete_Flags(){
     sram_mem[SAVE_FLAG_OFFS]=0xFF;
+    sram_mem[SAVE_FLAG_OFFS+1]=0xff;
+    sram_mem[SAVE_FLAG_OFFS+2]=0xff;
+    sram_mem[SAVE_FLAG_OFFS+3]=0xff;
 }
 
 
