@@ -321,11 +321,10 @@ void wallt_meta_reload_room(TMapInfo *bgt){
 }
 
 void ui_update(TMapInfo *bgt){
-	for (u32 i = 0; i < bgt->srcMapHeight; i++){
-		for (u32 x = 0; x < bgt->srcMapWidth; x++)
-		{
-			MetaTileLoad(x,i,0,bgt->dstMap, inanimatesMetaTiles);
-		}
+	for (u32 i = 1; i < 8; i++) //Annoyingly, i do have to "optimize" this
+	{
+		MetaTileLoad(i,1,0,bgt->dstMap, inanimatesMetaTiles);
+		MetaTileLoad(0x0F - i,9,0,bgt->dstMap, inanimatesMetaTiles);
 	}
 	s32 offset=0;
 
@@ -401,6 +400,7 @@ int main()
 	while(1)
 	{
 		VBlankIntrWait();
+		ui_update(&g_ui);
 		key_poll();
 		
 		
@@ -452,7 +452,6 @@ int main()
 
 		vp_center(&g_vp, x, y);
 		oam_copy(oam_mem, obj_buffer, 128);
-		ui_update(&g_ui);
 		bgt_update(&g_bg, &g_vp);
 		bgt_update(&g_walls, &g_vp);
 	}
