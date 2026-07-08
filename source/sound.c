@@ -8,7 +8,7 @@ mm_sound_effect boom = {
 		(int)(1.0f * (1<<10)),	// rate
 		0,		// handle
 		255,	// volume
-		255,	// panning
+		127,	// panning
 	};
 
 void PlayEffect(enum EMaxModEffectEx EffectIndex){
