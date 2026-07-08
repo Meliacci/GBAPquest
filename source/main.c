@@ -5,6 +5,9 @@
 // (20060221 - 20070216, cearn)
 
 #include <string.h>
+#include <maxmod.h>
+#include "soundbank.h"
+#include "soundbank_bin.h"
 
 #include <tonc.h>
 #include "BG.h"
@@ -20,6 +23,7 @@
 #include "interactions.h"
 #include "inventory.h"
 #include "save.h"
+#include "sound.h"
 
 #define MAX_X_SCROLL 257 //set the  Size in Pixels of the Map
 #define MAX_Y_SCROLL 257
@@ -364,7 +368,7 @@ int main()
 {
 	// Init interrupts and VBlank irq.
 	irq_init(NULL);
-	irq_add(II_VBLANK, NULL);
+	irq_add(II_VBLANK, mmVBlank);
 	oam_init(obj_buffer, 128);
 	// Load palette
 	memcpy16(&pal_bg_mem[0], inanimatesPal, inanimatesPalLen/sizeof(u16));
@@ -396,10 +400,15 @@ int main()
 		DCNT_OBJ_1D;
 	ui_update(&g_ui);
 	// Scroll around some
+
+	mmInitDefault( (mm_addr)soundbank_bin, 8 );
+	mmStart( MOD_FLATOUTLIES, MM_PLAY_LOOP );
+
 	int x= 0, y=0;
 	while(1)
 	{
 		VBlankIntrWait();
+		mmFrame();
 		ui_update(&g_ui);
 		key_poll();
 		
@@ -409,6 +418,7 @@ int main()
 		player_turn(&g_link);
 		player_move(&g_link);
 		if(DiedThisFrame){
+			PlayEffect(EMME_BOOM);
 			DiedThisFrame=false;
 			full_heal();
 			player_tp(&g_link, int2fx(96), int2fx(176)); //Spawn at Start, as He failed
