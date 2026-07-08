@@ -417,16 +417,13 @@ int main()
 		if (key_hit(KEY_SELECT))
 		{
 			if(key_is_down(KEY_LEFT)){
-				load_inv_from_SRAM();
-				load_checks_from_SRAM();
+				loadSave();
 				DiedThisFrame=true;
 			}else if(key_is_down(KEY_RIGHT)){
-				delete_inv_SRAM();
-				delete_checks_SRAM();
+				deleteSave();
 				DiedThisFrame=true;
 			}else if(!(key_tri_vert()||key_tri_horz())){
-				save_inv_to_SRAM();
-				save_checks_to_SRAM();
+				save();
 			}
 			
 		}

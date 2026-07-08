@@ -3,6 +3,10 @@
 #include "save.h"
 
 extern bool g_CoordChecked[16][16];
+extern bool HammerMode;
+extern bool WallMode;
+extern bool ExtraChest;
+extern bool HardMode;
 
 void load_inv_from_SRAM(){
     if (sram_mem[SAVE_FLAG_OFFS] && sram_mem[SAVE_FLAG_OFFS]!=0xff){
@@ -60,4 +64,19 @@ void delete_checks_SRAM(){
             sram_mem[SAVE_CHECKS_OFFS+0x10*x+i]=false;
         }
     }
+}
+
+
+void loadSave(){
+    load_inv_from_SRAM();
+    load_checks_from_SRAM();
+}
+void save(){
+    save_inv_to_SRAM();
+    save_checks_to_SRAM();
+    
+}
+void deleteSave(){
+    delete_inv_SRAM();
+    delete_checks_SRAM();
 }
