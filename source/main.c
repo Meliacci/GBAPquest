@@ -402,8 +402,8 @@ int main()
 	// Scroll around some
 
 	mmInitDefault( (mm_addr)soundbank_bin, 8 );
-	mmStart( MOD_FLATOUTLIES, MM_PLAY_LOOP );
-
+	mmSetModuleVolume(512);
+	mmStart( MOD_BGM, MM_PLAY_LOOP );
 	int x= 0, y=0;
 	while(1)
 	{
