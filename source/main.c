@@ -298,8 +298,15 @@ void wallt_meta_reload_room(TMapInfo *bgt){
 			}
 
 		}else{
-			const TInteract Blank={EIT_NONE, Initializers[i].x,Initializers[i].y, 0x00, ITEM_NOTHING, inanimatesMetaTiles};
-			InteractiveInitializers[i]=Blank;
+			if (Initializers[i].type==EIT_BUTTON)
+			{
+				InteractiveInitializers[i]=Initializers[i];
+				InteractiveInitializers[i].state=Initializers[i].state+1;
+			}else{
+				const TInteract Blank={EIT_NONE, Initializers[i].x,Initializers[i].y, 0x00, ITEM_NOTHING, inanimatesMetaTiles};
+				InteractiveInitializers[i]=Blank;
+			}
+			
 		}
 	}
 	u32 copyLen=InitializersLen;
