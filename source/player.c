@@ -7,6 +7,8 @@
 #include "interactions.h"
 #include "inventory.h"
 
+#include "sound.h"
+
 #define LINK_SPEED	0x1000
 
 // --------------------------------------------------------------------
