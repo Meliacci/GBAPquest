@@ -12,6 +12,7 @@ It is as of Writing, Able to be Played on GBA Compatible Emulators and Real hard
 ```
 D-PAD: Movement
 B-BUTTON: Interact
+A-BUTTON: Shoot Confetti Cannon (Consumable)
 SELECT: Save
 SELECT+D-PAD-LEFT: Load Save and Reload
 SELECT+D-PAD-RIGHT: Delete Save and Reload
