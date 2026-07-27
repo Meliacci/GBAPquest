@@ -35,8 +35,8 @@ void ShootConfetti(){
         }else{
             for (u32 i = 0; i < 4; i++)
             {
-                obj_buffer[1+i].attr0=((((obj_buffer[1+i].attr0>>ATTR0_Y_SHIFT)+((i<=1?1:-1)))<<ATTR0_Y_SHIFT))&ATTR0_Y_MASK;
-                obj_buffer[1+i].attr1=(obj_buffer[1+i].attr1&~ATTR1_X_MASK)|(((obj_buffer[1+i].attr1>>ATTR1_X_SHIFT)+(i%2?1:-1))&ATTR1_X_MASK);
+                obj_buffer[1+i].attr0=((((obj_buffer[1+i].attr0>>ATTR0_Y_SHIFT)+((i<=1?CONFETTI_SPEED:-CONFETTI_SPEED)))<<ATTR0_Y_SHIFT))&ATTR0_Y_MASK;
+                obj_buffer[1+i].attr1=(obj_buffer[1+i].attr1&~ATTR1_X_MASK)|(((obj_buffer[1+i].attr1>>ATTR1_X_SHIFT)+(i%2?CONFETTI_SPEED:-CONFETTI_SPEED))&ATTR1_X_MASK);
             }        
         }
         ShootingConfetti--;

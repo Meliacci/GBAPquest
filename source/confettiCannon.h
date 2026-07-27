@@ -4,9 +4,9 @@
 #ifndef __CONFETTI__
 #define __CONFETTI__
 
-#define CONFETTI_TIMER_MAX 0x00ff
 // === CONSTANTS ======================================================
-
+#define CONFETTI_TIMER_MAX 0x0030
+#define CONFETTI_SPEED 3
 // === CLASSES ========================================================
 
 #endif // __CONFETTI__
