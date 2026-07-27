@@ -9,7 +9,7 @@
 
 enum EMaxModEffectEx
 {
-	EMME_BOOM= 0
+	EMME_BOOM= 0, EMME_BOSS, EMME_ENEMY, EMME_LOCK
 };
 
 
