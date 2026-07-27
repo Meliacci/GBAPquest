@@ -6,7 +6,7 @@ Using the library [Libtonc for the GBA](https://github.com/devkitPro/libtonc)
 
 This is a Simple GBA Compatible Game, meant for Randomization, Learning, and Didactic purposes.
 
-It is as of Writing, Able to be Played on GBA Compatible Emulators and Real hardware, tho it lacks QoL and Has Bugs that Involve Saving to SRAM and Loading a file
+It is as of Writing, Able to be Played on GBA Compatible Emulators and Real hardware.
 
 ## Controls
 ```
