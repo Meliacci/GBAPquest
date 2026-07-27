@@ -14,12 +14,14 @@
 #include "inanimates.h"
 #include "items.h"
 #include "human.h"
+#include "confetti.h"
 #include "boss.h"
 #include "normal_enemy.h"
 #include "hearts.h"
 
 #include "metatile.h"
 #include "player.h"
+#include "confettiCannon.h"
 #include "interactions.h"
 #include "inventory.h"
 #include "save.h"
@@ -73,6 +75,7 @@ bool WallMode=true;
 bool DiedThisFrame=false;
 bool ExtraChest=true;
 bool HardMode=true; //Will probably Need to Be `Volatile`d?? haven't tested this yet
+extern u32 ShootingConfetti;
 
 /*
 				Buttons
@@ -400,6 +403,8 @@ int main()
 	ui_meta_init(&g_ui,1,BG_CBB(0)|BG_SBB(28)| BG_4BPP | BG_REG_32x32 | BG_PRIO(0), 16, 16, 16);
 	GRIT_CPY(pal_obj_mem, humanPal);
 	GRIT_CPY(tile_mem[4], humanTiles);
+	
+	confetti_init();
 
 	player_init(&g_link, int2fx(96), int2fx(176), 0);
 
@@ -463,10 +468,14 @@ int main()
 			reset_inventory();
 
 		}
-		
+		if(key_hit(KEY_A)){
+			if(use_item(ITEM_CONFETTI)){
+				ShootingConfetti=CONFETTI_TIMER_MAX;
+			}
+		}
 		//Screen View Stuff
 		x= fx2int(g_link.x), y= fx2int(g_link.y);
-
+		ShootConfetti();
 		vp_center(&g_vp, x, y);
 		oam_copy(oam_mem, obj_buffer, 128);
 		bgt_update(&g_bg, &g_vp);
