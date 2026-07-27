@@ -9,20 +9,22 @@ This is a Simple GBA Compatible Game, meant for Randomization, Learning, and Did
 It is as of Writing, Able to be Played on GBA Compatible Emulators and Real hardware, tho it lacks QoL and Has Bugs that Involve Saving to SRAM and Loading a file
 
 ## Controls
-
+```
 D-PAD: Movement
 B-BUTTON: Interact
 SELECT: Save
 SELECT+D-PAD-LEFT: Load Save and Reload
 SELECT+D-PAD-RIGHT: Delete Save and Reload
-
+```
 ### Debug Toggles
 
 These Will Make you Restart the Whole Game to it's initial Values
 
+```
 START: Toggle Hammer Mode
 START+D-PAD-DOWN: Toggle HardMode
 START+D-PAD-RIGHT: Toggle Extra Chest
+```
 ## Compatibility to APquest
 
 While this Plays like APquest, it is not compatible with the original, as the need to generate a patch file, handle patching, and connect via a different client, changes enough as to make it impossible to Connect to Orignal APquest Slots.
