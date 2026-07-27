@@ -469,7 +469,9 @@ int main()
 
 		}
 		if(key_hit(KEY_A)){
-			ShootingConfetti=CONFETTI_TIMER_MAX;
+			if(use_item(ITEM_CONFETTI)){
+				ShootingConfetti=CONFETTI_TIMER_MAX;
+			}
 		}
 		//Screen View Stuff
 		x= fx2int(g_link.x), y= fx2int(g_link.y);
