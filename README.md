@@ -30,6 +30,8 @@ While this Plays like APquest, it is not compatible with the original, as the ne
 As of writing, this Project is Playable But does not Yet have an Archipelago Multiworld Implementation
 
 ## TODOs
-~~Triggerable Modes:~~ DONE
-Sound: BGM, Jingles on Pickup, Defeat, Victory
-Extra: Confetti Cannon functionality
+- ~~Triggerable Modes:~~ DONE
+
+- Sound: ~~BGM, Jingles on Pickup (Replaced by Sound on Interaction), Defeat~~ DONE; Victory Jingle remanining, Possibly not gonna be added
+
+- Extra: ~~Confetti Cannon functionality~~ DONE
