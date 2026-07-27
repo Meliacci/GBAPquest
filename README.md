@@ -20,7 +20,7 @@ SELECT+D-PAD-RIGHT: Delete Save and Reload
 
 These Will Make you Restart the Whole Game to it's initial Values
 
-START: Toggle Hammer Mode (Bugged)
+START: Toggle Hammer Mode
 START+D-PAD-DOWN: Toggle HardMode
 START+D-PAD-RIGHT: Toggle Extra Chest
 ## Compatibility to APquest
