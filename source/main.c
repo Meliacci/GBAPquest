@@ -70,7 +70,7 @@ TMapInfo g_ui;
 
 OBJ_ATTR obj_buffer[128];
 TSprite g_link;
-bool HammerMode=false;
+bool HammerMode=true;
 bool DiedThisFrame=false;
 bool ExtraChest=true;
 bool HardMode=true; //Will probably Need to Be `Volatile`d?? haven't tested this yet
