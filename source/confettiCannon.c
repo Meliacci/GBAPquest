@@ -13,13 +13,13 @@ OBJ_ATTR Confettis[]={
     {ATTR0_HIDE,ATTR1_SIZE_16,ATTR2_ID(0x1C) |ATTR2_PALBANK(1),0},
 };
 
-u32 Next=0xBA5EBA11;
+u32 PRNG_Next=0xBA5EBA11;
 
 u32 PRNG(){
 
     //LCG: X * a + c: Where 
-    Next = Next * 1103515243 + 12345;
-    return (u32)(Next >> 16) & 0x7fff;
+    PRNG_Next = PRNG_Next * 1103515243 + 12345;
+    return (u32)(PRNG_Next >> 16) & 0x7fff;
 }
 
 
