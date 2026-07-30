@@ -51,15 +51,17 @@ void InteractWith(TInteract* Interactable){
                     MetaTileLoad(Interactable->x,Interactable->y,Interactable->state,Interactable->dst,Interactable->MetaTiles);
                     deal_damage();
                 }else{
+                    int Diff=0;
                     if(Interactable->target>>8){
                         Interactable->MetaTiles=heartsMetaTiles;
+                        Diff=-5;
                     }else{
                         Interactable->MetaTiles=itemsMetaTiles;
                     }
                     if(Interactable->target&0xFF){
-                        MetaTileLoad(Interactable->x,Interactable->y,Interactable->target&0xFF,Interactable->dst,Interactable->MetaTiles);
+                        MetaTileLoad(Interactable->x,Interactable->y,(Interactable->target&0xFF)+Diff,Interactable->dst,Interactable->MetaTiles);
                         Interactable->type=EIT_ITEM;
-                        Interactable->state=Interactable->target;
+                        Interactable->state=Interactable->target-Diff;
                     }else{
                         Interactable->MetaTiles=inanimatesMetaTiles;
                         MetaTileLoad(Interactable->x,Interactable->y,0x00,Interactable->dst,Interactable->MetaTiles);

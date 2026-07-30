@@ -71,7 +71,8 @@ def checkAddresses()->list[list]:
     with open('build/GBAPquest.map') as datafile:
         
         found = list()
-        for line in datafile:
+        iro=iter(datafile)
+        for line in iro:
             for wordKey in VariableAddressDictionary:
                 for word in VariableAddressDictionary.get(wordKey,[]):
                         if word in line and '0x' in line:

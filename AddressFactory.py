@@ -1,11 +1,11 @@
 AddressDictionary={
-    'bossMetaTiles':0x08004e40,
-    'humanTiles':0x08005224,
-    'humanPal':0x08005424,
-    'inanimatesMetaTiles':0x08005774,
-    'normal_enemyMetaTiles':0x08005be4,
-    'HardModeHealthToSprite':0x0803d274,
-    'Initializers':0x0803d28c,
+    'bossMetaTiles':0x08004e58,
+    'humanTiles':0x0800523c,
+    'humanPal':0x0800543c,
+    'inanimatesMetaTiles':0x0800578c,
+    'normal_enemyMetaTiles':0x08005bfc,
+    'HardModeHealthToSprite':0x0803d28c,
+    'Initializers':0x0803d2a4,
     '__bss_start__':0x03001504,
     'g_CoordChecked':0x03001524,
     'g_CoordLUT':0x03001624,
@@ -36,9 +36,9 @@ SectionDictionary={
 }
 # Section, AddressStart, Length, LoadAtMemoryROM
 SectionsTuple=[
-    ('.iwram',0x03000000,0x1504,0x0803d3a8),
-    ('.data',0x03002910,0x6b8,0x0803e8ac),
-    ('.init_array',0x03002fc8,0x4,0x0803ef64),
-    ('.fini_array',0x03002fcc,0x4,0x0803ef68),
-    ('.pad',0x02000000,0x8,0x0803ef6c),
+    ('.iwram',0x03000000,0x1504,0x0803d3c0),
+    ('.data',0x03002910,0x6b8,0x0803e8c4),
+    ('.init_array',0x03002fc8,0x4,0x0803ef7c),
+    ('.fini_array',0x03002fcc,0x4,0x0803ef80),
+    ('.pad',0x02000000,0x8,0x0803ef84),
 ]
